@@ -1,10 +1,10 @@
-import type { TProvider, TInterviewType, IInterviewGuide, IHistoryEntry, IGeneratePayload } from '~/types/index';
+import type { IInterviewGuide, IHistoryEntry, IGeneratePayload } from '~/types/index';
 
 export function useInterviewGuide() {
     async function generate(payload: IGeneratePayload): Promise<void> {
         isLoading.value = true;
         error.value = null;
-
+        startProgress();
         try {
             const data = await $fetch<IInterviewGuide>('/api/interview/generate', {
                 method: 'POST',
@@ -12,8 +12,10 @@ export function useInterviewGuide() {
             });
 
             result.value = data;
-        } catch (err: any) {
-            error.value = err?.message || 'Failed to generate guide.';
+            finishProgress();
+        } catch (err: unknown) {
+            error.value = (err as { message?: string })?.message || 'Failed to generate guide.';
+            finishProgress();
         } finally {
             isLoading.value = false;
         }
@@ -29,7 +31,16 @@ export function useInterviewGuide() {
                 method: 'DELETE',
                 body: { id },
             });
-        } catch {}
+        } catch(err: unknown) {
+            // Revert local deletion on failure
+            const deletedEntry = history.value.find((entry) => entry.id === id);
+
+            if (deletedEntry) {
+                history.value.push(deletedEntry);
+            }
+
+            throw err;
+        }
     }
 
     async function clearHistory(): Promise<void> {
@@ -41,7 +52,12 @@ export function useInterviewGuide() {
                 method: 'DELETE',
                 body: { all: true },
             });
-        } catch {}
+        } catch(err: unknown) {
+            // Revert local clearing on failure
+            await loadHistory();
+
+            throw err;
+        }
     }
 
     function reset(): void {

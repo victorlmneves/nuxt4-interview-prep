@@ -18,7 +18,6 @@ const {
     reset,
     providerLabel,
     interviewTypeLabel,
-    categoryColor,
 } = useInterviewGuide();
 
 const { formatDate } = useDateFormat();

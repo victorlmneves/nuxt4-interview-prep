@@ -28,7 +28,9 @@ const totalQuestions = computed(() => {
 });
 
 onMounted(async () => {
-    await loadGuide(id.value);
+    if (id.value) {
+        await loadGuide(id.value);
+    }
 });
 
 function goBack(): void {

@@ -48,7 +48,44 @@ defineOptions({
         width: 28px;
         height: 28px;
         border-radius: 50%;
-        /* ...restante CSS... */
+        background: var(--accent);
+        color: var(--paper);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 600;
+        box-shadow: 0 1px 4px rgb(0 0 0 / 0.04);
+        flex-shrink: 0;
+    }
+
+    &__title {
+        font-size: 1.15rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        margin: 0;
+    }
+
+    &__duration {
+        font-size: 0.85rem;
+        color: var(--ink-muted);
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 2px 10px;
+        font-weight: 500;
+    }
+
+    &__description {
+        font-size: 0.98rem;
+        color: var(--ink-muted);
+        margin: 0.2rem 0 0.5rem 0;
+    }
+
+    &__questions {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 0.5rem;
     }
 }
 </style>

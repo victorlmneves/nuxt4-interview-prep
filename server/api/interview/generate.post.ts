@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { randomUUID } from 'node:crypto';
-import type { IInterviewGuide, IGeneratePayload, TInterviewType } from '~/types/index';
+import type { IInterviewGuide, IGeneratePayload } from '~/types/index';
 
 const client = new Anthropic();
 
@@ -176,7 +176,7 @@ export default defineEventHandler(async (event) => {
 
     if (body.provider === 'anthropic') {
         rawResponse = await generateWithAnthropic(body);
-    } else if (body.provider === 'gpt-4o') {
+    } else if (body.provider === 'openai') {
         rawResponse = await generateWithGPT4o(body);
     } else if (body.provider === 'gemini') {
         rawResponse = await generateWithGemini(body);
@@ -186,6 +186,7 @@ export default defineEventHandler(async (event) => {
             statusMessage: `Unknown AI provider: ${body.provider}`,
         });
     }
+
     // Placeholder Gemini handler
     async function generateWithGemini(payload) {
         const apiKey = process.env.GEMINI_API_KEY;
@@ -228,7 +229,7 @@ export default defineEventHandler(async (event) => {
             candidateName: 'GPT-4o Candidate',
             roleName: 'GPT-4o Role',
             interviewType: payload.interviewType || 'mixed',
-            provider: 'gpt-4o',
+            provider: 'openai',
             generatedAt: new Date().toISOString(),
             sections: [],
             candidate: {
