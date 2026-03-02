@@ -66,12 +66,31 @@ defineOptions({
                         <li v-for="(criteria, i) in props.question.evaluationCriteria" :key="i">{{ criteria }}</li>
                     </ul>
                 </div>
+                <div v-if="props.question.sampleAnswer" class="question-card__answer">
+                    <strong class="question-card__label">Sample answer:</strong>
+                    <div class="question-card__answer-content">{{ props.question.sampleAnswer }}</div>
+                </div>
             </div>
         </Transition>
     </div>
 </template>
 
 <style scoped lang="scss">
+.question-card__answer {
+    margin-top: 1.2rem;
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.03);
+}
+
+.question-card__answer-content {
+    font-size: 0.98rem;
+    color: var(--ink);
+    margin-top: 0.2rem;
+    white-space: pre-line;
+}
+
 .question-card {
     border: 1px solid var(--border);
     border-radius: 12px;

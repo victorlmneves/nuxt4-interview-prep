@@ -26,6 +26,7 @@ export interface IInterviewQuestion {
     followUps: string[];
     evaluationCriteria: string[];
     estimatedMinutes: number;
+    sampleAnswer?: string;
 }
 
 export interface IInterviewSection {
