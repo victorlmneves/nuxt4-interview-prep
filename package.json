@@ -1,0 +1,49 @@
+{
+    "name": "interview-prep",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare",
+        "lint": "eslint .",
+        "lint:fix": "eslint --fix .",
+        "lint:css": "stylelint '**/*.{css,vue}' --ignore-pattern '.nuxt/**' --ignore-pattern '.output/**' --ignore-pattern 'dist/**' --ignore-pattern 'node_modules/**'",
+        "lint:css:fix": "stylelint '**/*.{css,vue}' --ignore-pattern '.nuxt/**' --ignore-pattern '.output/**' --ignore-pattern 'dist/**' --ignore-pattern 'node_modules/**' --fix",
+        "format": "prettier --write '**/*.{ts,vue,js,json}' --ignore-path .gitignore && stylelint '**/*.{css,vue}' --ignore-pattern '.nuxt/**' --ignore-pattern '.output/**' --fix && eslint --fix '**/*.{ts,vue,js}'"
+    },
+    "dependencies": {
+        "@anthropic-ai/sdk": "^0.78.0",
+        "@google/generative-ai": "^0.24.1",
+        "@nuxtjs/google-fonts": "^3.2.0",
+        "mammoth": "^1.11.0",
+        "nuxt": "^4.3.1",
+        "openai": "^6.22.0",
+        "pdf-parse": "^2.4.5",
+        "vue": "^3.5.13",
+        "vue-router": "^4.5.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "@nuxtjs/tailwindcss": "^6.14.0",
+        "@types/node": "^25.3.0",
+        "@typescript-eslint/parser": "^8.56.0",
+        "eslint": "^9.15.0",
+        "eslint-config-prettier": "^10.0.1",
+        "eslint-plugin-jsdoc": "^62.7.0",
+        "eslint-plugin-jsonc": "^3.1.0",
+        "eslint-plugin-regexp": "^3.0.0",
+        "eslint-plugin-vue": "^10.8.0",
+        "globals": "^17.3.0",
+        "prettier": "^3.8.1",
+        "sass": "^1.97.3",
+        "stylelint": "^17.3.0",
+        "stylelint-config-recommended-vue": "^1.6.1",
+        "stylelint-config-standard": "^40.0.0",
+        "typescript": "^5.7.2",
+        "typescript-eslint": "^8.56.0",
+        "vue-eslint-parser": "^10.4.0"
+    }
+}

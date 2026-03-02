@@ -1,0 +1,14 @@
+{
+    "extends": "./.nuxt/tsconfig.json",
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "noImplicitAny": false,
+        "types": ["node"],
+        "typeRoots": ["./node_modules/@types", "./app/types"]
+    }
+}
