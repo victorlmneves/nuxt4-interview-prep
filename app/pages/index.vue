@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useInterviewGuide } from '~/composables/useInterviewGuide';
+import { onMounted } from 'vue';
 import { useDateFormat } from '~/composables/useDateFormat';
 import type { TProvider, TInterviewType, IHistoryEntry } from '~/types/index';
 
@@ -9,7 +10,6 @@ const {
     isLoading,
     isHistoryLoading,
     error,
-    progress,
     history,
     generate,
     loadGuide,
@@ -18,7 +18,9 @@ const {
     reset,
     providerLabel,
     interviewTypeLabel,
+    loadHistory,
 } = useInterviewGuide();
+
 
 const { formatDate } = useDateFormat();
 
@@ -170,6 +172,12 @@ const interviewTypes: TInterviewType[] = ['technical', 'behavioural', 'mixed'];
 
 const canSubmit = computed(() => {
     return cvText.value.trim().length > 0 && jobDescription.value.trim().length > 0;
+});
+
+
+
+onMounted(() => {
+    loadHistory();
 });
 
 defineOptions({
@@ -401,21 +409,6 @@ defineOptions({
                 <p v-if="error" class="error-msg">{{ error }}</p>
             </section>
 
-            <!-- Loading state -->
-            <section v-if="isLoading" class="loading-panel animate-fade-in">
-                <div class="loading-panel__inner">
-                    <div class="loading-panel__icon font-serif">⟳</div>
-                    <h2 class="loading-panel__title font-serif">Generating interview guide…</h2>
-                    <p class="loading-panel__sub">Analysing profile, crafting questions, structuring guide</p>
-
-                    <div class="progress-bar">
-                        <div class="progress-bar__fill" :style="{ width: progress + '%' }" />
-                    </div>
-
-                    <span class="progress-bar__label font-mono">{{ Math.round(progress) }}%</span>
-                </div>
-            </section>
-
             <!-- Results -->
             <section v-if="result && !isLoading" class="results-panel animate-fade-up">
                 <!-- Results header -->
@@ -423,9 +416,9 @@ defineOptions({
                     <button class="results-panel__back" @click="reset">← New guide</button>
 
                     <div class="results-panel__meta">
-                        <span class="results-panel__meta-provider font-mono">{{ providerLabel(result.provider) }}</span>
-                        <span class="results-panel__meta-type font-mono">{{ interviewTypeLabel(result.interviewType) }}</span>
-                        <span class="results-panel__meta-date font-mono">{{ formatDate(result.generatedAt) }}</span>
+                        <span class="results-panel__meta-provider font-mono">{{ providerLabel(result && result.provider ? result.provider : '') }}</span>
+                        <span class="results-panel__meta-type font-mono">{{ interviewTypeLabel(result && result.interviewType ? result.interviewType : '') }}</span>
+                        <span class="results-panel__meta-date font-mono">{{ formatDate(result && result.generatedAt ? result.generatedAt : '') }}</span>
                     </div>
                 </div>
 
@@ -433,21 +426,21 @@ defineOptions({
                 <div class="hero-card">
                     <div class="hero-card__left">
                         <div class="candidate__avatar font-serif">
-                            {{ result.candidate.name?.charAt(0) ?? '?' }}
+                            {{ result && result.candidate && result.candidate.name ? result.candidate.name.charAt(0) : '?' }}
                         </div>
 
                         <div class="candidate__info">
-                            <h2 class="candidate__name font-serif">{{ result.candidateName }}</h2>
-                            <p class="candidate__role">{{ result.roleName }}</p>
+                            <h2 class="candidate__name font-serif">{{ result && result.candidateName ? result.candidateName : '' }}</h2>
+                            <p class="candidate__role">{{ result && result.roleName ? result.roleName : '' }}</p>
 
                             <div class="candidate__chips">
-                                <span v-if="result.candidate.totalExperience" class="candidate__chip font-mono">
+                                <span v-if="result && result.candidate && result.candidate.totalExperience" class="candidate__chip font-mono">
                                     {{ result.candidate.totalExperience }}
                                 </span>
-                                <span v-if="result.candidate.location" class="candidate__chip font-mono">
+                                <span v-if="result && result.candidate && result.candidate.location" class="candidate__chip font-mono">
                                     {{ result.candidate.location }}
                                 </span>
-                                <span v-if="result.candidate.education" class="candidate__chip font-mono">
+                                <span v-if="result && result.candidate && result.candidate.education" class="candidate__chip font-mono">
                                     {{ result.candidate.education }}
                                 </span>
                             </div>
@@ -456,7 +449,7 @@ defineOptions({
 
                     <div class="hero-card__stats">
                         <div class="stat">
-                            <span class="stat__value font-serif">{{ result?.sections?.length ?? 0 }}</span>
+                            <span class="stat__value font-serif">{{ result && result.sections ? result.sections.length : 0 }}</span>
                             <span class="stat__label font-mono">sections</span>
                         </div>
                         <div class="stat">
@@ -464,25 +457,25 @@ defineOptions({
                             <span class="stat__label font-mono">questions</span>
                         </div>
                         <div class="stat">
-                            <span class="stat__value font-serif">{{ result.totalDurationMinutes }}</span>
+                            <span class="stat__value font-serif">{{ result && result.totalDurationMinutes ? result.totalDurationMinutes : 0 }}</span>
                             <span class="stat__label font-mono">minutes</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Opening notes -->
-                <div v-if="result.openingNotes" class="result-card result-card--highlight">
+                <div v-if="result && result.openingNotes" class="result-card result-card--highlight">
                     <h3 class="result-card__title font-serif">Opening Notes</h3>
                     <p class="result-card__body">{{ result.openingNotes }}</p>
                 </div>
 
                 <!-- Sections -->
                 <div class="sections-list">
-                    <InterviewSection v-for="(section, i) in result.sections" :key="i" :section="section" :index="i" />
+                    <InterviewSection v-for="(section, i) in result && result.sections ? result.sections : []" :key="i" :section="section" :index="i" />
                 </div>
 
                 <!-- Closing notes -->
-                <div v-if="result.closingNotes" class="result-card">
+                <div v-if="result && result.closingNotes" class="result-card">
                     <h3 class="result-card__title font-serif">Closing Notes</h3>
                     <p class="result-card__body">{{ result.closingNotes }}</p>
                 </div>
