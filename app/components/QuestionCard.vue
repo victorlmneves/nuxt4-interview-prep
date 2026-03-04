@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import type { IInterviewQuestion } from '~/types/index';
+import Prism from 'prismjs';
 import { useInterviewGuide } from '~/composables/useInterviewGuide';
+import type { IInterviewQuestion } from '~/types/index';
+import 'prismjs/themes/prism.css';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-markup';
 
 interface IProps {
     question: IInterviewQuestion;
@@ -13,6 +18,93 @@ const { categoryColor, difficultyColor } = useInterviewGuide();
 
 function toggleExpand(): void {
     isExpanded.value = !isExpanded.value;
+}
+
+function formatSampleAnswer(answer: string): Array<{ type: 'text' | 'code', content: string, lang?: string }> {
+    // Split answer into text and code blocks (markdown style)
+    const blocks: Array<{ type: 'text' | 'code', content: string, lang?: string }> = [];
+    // Support language hints: ```js, ```ts, ```vue
+    const regex = /```(\w+)?\n([\s\S]*?)```/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(answer)) !== null) {
+        if (match.index > lastIndex) {
+            blocks.push({ type: 'text', content: answer.slice(lastIndex, match.index) });
+        }
+
+        // match[1] is the language, match[2] is the code
+        blocks.push({ type: 'code', lang: match[1] ? match[1].toLowerCase() : 'javascript', content: match[2].trim() });
+        lastIndex = regex.lastIndex;
+    }
+
+    if (lastIndex < answer.length) {
+        blocks.push({ type: 'text', content: answer.slice(lastIndex) });
+    }
+
+    // Fallback: highlight lines that look like code (if no code blocks found)
+    if (blocks.length === 1 && blocks[0] && blocks[0].type === 'text') {
+        const lines = blocks[0].content.split(/\r?\n/);
+        const codeLineRegex = /^\s*(?:const|let|var|function|interface|class|type|import|export|return|if|for|while|switch|case|catch|async|await|[\]{}()]).*/;
+        let buffer: string[] = [];
+        let inCode = false;
+        const fallbackBlocks: Array<{ type: 'text' | 'code', content: string }> = [];
+
+        for (const line of lines) {
+            if (codeLineRegex.test(line)) {
+                if (!inCode && buffer.length) {
+                    fallbackBlocks.push({ type: 'text', content: buffer.join('\n') });
+                    buffer = [];
+                }
+
+                inCode = true;
+                buffer.push(line);
+            } else {
+                if (inCode && buffer.length) {
+                    fallbackBlocks.push({ type: 'code', content: buffer.join('\n') });
+                    buffer = [];
+                }
+
+                inCode = false;
+                buffer.push(line);
+            }
+        }
+
+        if (buffer.length) {
+            fallbackBlocks.push({ type: inCode ? 'code' : 'text', content: buffer.join('\n') });
+        }
+
+        return fallbackBlocks;
+    }
+
+    // Highlight code blocks using PrismJS
+    return blocks.map(block => {
+        if (block.type === 'code') {
+            let lang = block.lang || 'javascript';
+            let prismLang;
+
+            if (lang === 'vue') {
+                prismLang = Prism.languages.markup;
+                lang = 'markup';
+            } else if (lang === 'ts' || lang === 'typescript') {
+                prismLang = Prism.languages.typescript;
+                lang = 'typescript';
+            } else if (Prism.languages[lang]) {
+                prismLang = Prism.languages[lang];
+            } else {
+                prismLang = Prism.languages.javascript;
+                lang = 'javascript';
+            }
+
+            return {
+                type: 'code',
+                content: Prism.highlight(block.content, prismLang, lang),
+                lang,
+            };
+        }
+
+        return block;
+    });
 }
 
 defineOptions({
@@ -68,7 +160,43 @@ defineOptions({
                 </div>
                 <div v-if="props.question.sampleAnswer" class="question-card__answer">
                     <strong class="question-card__label">Sample answer:</strong>
-                    <div class="question-card__answer-content">{{ props.question.sampleAnswer }}</div>
+                    <div class="question-card__answer-content">
+                        <template v-for="(block, i) in formatSampleAnswer(props.question.sampleAnswer)" :key="i">
+                            <div v-if="block.type === 'text'">{{ block.content }}</div>
+                            <pre v-else class="code-block"><code :class="'language-' + (block.lang || 'javascript')" :lang="block.lang || 'javascript'" v-html="block.content"></code></pre>
+                        </template>
+                    </div>
+                </div>
+                <div v-else-if="['behavioural','situational','culture','leadership'].includes(props.question.category)" class="question-card__answer">
+                    <strong class="question-card__label">Example answers:</strong>
+                    <div class="question-card__answer-content">
+                        <ul>
+                            <li v-if="props.question.category === 'behavioural'">
+                                "I handled a conflict between team members by facilitating an open discussion, listening to both sides, and helping them find common ground. This improved collaboration and team morale."
+                            </li>
+                            <li v-if="props.question.category === 'behavioural'">
+                                "When faced with a tight deadline, I prioritized tasks, communicated clearly with stakeholders, and motivated the team to deliver on time without sacrificing quality."
+                            </li>
+                            <li v-if="props.question.category === 'situational'">
+                                "If I were assigned a project outside my expertise, I would research best practices, seek advice from experienced colleagues, and break the problem into manageable steps."
+                            </li>
+                            <li v-if="props.question.category === 'situational'">
+                                "If a project suddenly changed scope, I would quickly reassess priorities, communicate the impact to the team, and adjust our plan to stay aligned with business goals."
+                            </li>
+                            <li v-if="props.question.category === 'culture'">
+                                "I contribute to a positive team culture by celebrating wins, supporting colleagues, and encouraging open feedback."
+                            </li>
+                            <li v-if="props.question.category === 'culture'">
+                                "I value diversity and inclusion, and I make sure all voices are heard during meetings and decision-making."
+                            </li>
+                            <li v-if="props.question.category === 'leadership'">
+                                "As a leader, I set clear expectations, provide regular feedback, and empower my team to take ownership of their work."
+                            </li>
+                            <li v-if="props.question.category === 'leadership'">
+                                "I mentor junior team members by sharing knowledge, offering guidance, and encouraging their professional growth."
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </Transition>
@@ -83,12 +211,25 @@ defineOptions({
     padding: 1rem;
     box-shadow: 0 1px 4px rgb(0 0 0 / 0.03);
 }
-
+    
 .question-card__answer-content {
     font-size: 0.98rem;
     color: var(--ink);
     margin-top: 0.2rem;
     white-space: pre-line;
+    word-break: break-word;
+}
+
+.code-block {
+    background: #f6f8fa;
+    color: #222;
+    font-family: 'JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    padding: 0.7em 1em;
+    margin: 0.7em 0;
+    overflow-x: auto;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.03);
 }
 
 .question-card {

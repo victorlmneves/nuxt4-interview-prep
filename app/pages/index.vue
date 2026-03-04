@@ -28,11 +28,65 @@ const jobDescription = ref('');
 const provider = ref<TProvider>('anthropic');
 const interviewType = ref<TInterviewType>('mixed');
 const cvInputMode = ref<'paste' | 'upload'>('paste');
+const jdInputMode = ref<'paste' | 'upload'>('paste');
 const showHistory = ref(false);
 const uploadedFileName = ref<string | null>(null);
+const uploadedJDFileName = ref<string | null>(null);
 const isDraggingOver = ref(false);
+const isJDDraggingOver = ref(false);
 
 // ── File upload ───────────────────────────────────────────────────────────────
+async function handleJDFile(file: File): Promise<void> {
+    uploadedJDFileName.value = file.name;
+
+    if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+        jobDescription.value = await file.text();
+
+        return;
+    }
+
+    const form = new FormData();
+
+    form.append('file', file);
+
+    try {
+        const response = await fetch('/api/extract-text', {
+            method: 'POST',
+            body: form,
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to extract text');
+        }
+
+        const data = (await response.json()) as { text: string };
+
+        jobDescription.value = data.text;
+    } catch {
+        jobDescription.value = '';
+        uploadedJDFileName.value = null;
+
+        alert('Could not extract text. Please paste the job description directly.');
+    }
+}
+
+function onJDDrop(e: DragEvent): void {
+    isJDDraggingOver.value = false;
+    const file = e.dataTransfer?.files[0];
+
+    if (file) {
+        handleJDFile(file);
+    }
+}
+
+function onJDFileInput(e: Event): void {
+    const target = e.target as HTMLInputElement;
+    const file = target.files?.[0];
+
+    if (file) {
+        handleJDFile(file);
+    }
+}
 async function handleFile(file: File): Promise<void> {
     uploadedFileName.value = file.name;
 
@@ -255,14 +309,55 @@ defineOptions({
                     <div class="input-card">
                         <div class="input-card__header">
                             <label class="input-card__label">Job Description</label>
+                            <div class="input-card__tabs">
+                                <button
+                                    class="tab-btn"
+                                    :class="{ 'tab-btn--active': jdInputMode === 'paste' }"
+                                    @click="jdInputMode = 'paste'"
+                                >
+                                    Paste
+                                </button>
+                                <button
+                                    class="tab-btn"
+                                    :class="{ 'tab-btn--active': jdInputMode === 'upload' }"
+                                    @click="jdInputMode = 'upload'"
+                                >
+                                    Upload
+                                </button>
+                            </div>
                         </div>
 
                         <textarea
+                            v-if="jdInputMode === 'paste'"
                             v-model="jobDescription"
                             class="text-input font-mono"
                             placeholder="Paste the job description or role requirements here…"
                             rows="14"
                         />
+
+                        <div
+                            v-else
+                            class="dropzone"
+                            :class="{ 'dropzone--drag-over': isJDDraggingOver }"
+                            @dragover.prevent="isJDDraggingOver = true"
+                            @dragleave="isJDDraggingOver = false"
+                            @drop.prevent="onJDDrop"
+                        >
+                            <input id="jd-file" type="file" accept=".txt,.pdf,.docx" class="dropzone__file-input" @change="onJDFileInput" />
+
+                            <label for="jd-file" class="dropzone__label">
+                                <span class="dropzone__icon">↑</span>
+                                <span v-if="uploadedJDFileName" class="dropzone__filename font-mono">
+                                    {{ uploadedJDFileName }}
+                                </span>
+                                <span v-else>
+                                    Drop a file or
+                                    <u>browse</u>
+                                    <br />
+                                    <small>.txt · .pdf · .docx</small>
+                                </span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -361,7 +456,7 @@ defineOptions({
 
                     <div class="hero-card__stats">
                         <div class="stat">
-                            <span class="stat__value font-serif">{{ result.sections.length }}</span>
+                            <span class="stat__value font-serif">{{ result?.sections?.length ?? 0 }}</span>
                             <span class="stat__label font-mono">sections</span>
                         </div>
                         <div class="stat">

@@ -1,10 +1,73 @@
 import type { IInterviewGuide, IHistoryEntry, IGeneratePayload } from '~/types/index';
 
 export function useInterviewGuide() {
+    const result = ref<IInterviewGuide | null>(null);
+    const isLoading = ref(false);
+    const isHistoryLoading = ref(false);
+    const error = ref<string | null>(null);
+    const progress = ref(0);
+    const history = ref<IHistoryEntry[]>([]);
+
+    // LocalStorage keys
+    const HISTORY_KEY = 'interview_history';
+    const GUIDES_KEY = 'interview_guides';
+
+    // Save history and guides to localStorage
+    function saveHistoryToLocalStorage() {
+        try {
+            // eslint-disable-next-line
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history.value));
+        } catch {
+            console.warn('Failed to save history to localStorage.');
+        }
+    }
+
+    function saveGuideToLocalStorage(guide: IInterviewGuide) {
+        try {
+            const raw = localStorage.getItem(GUIDES_KEY);
+            const guides = raw ? JSON.parse(raw) : {};
+
+            guides[guide.id] = guide;
+
+            // eslint-disable-next-line
+            localStorage.setItem(GUIDES_KEY, JSON.stringify(guides));
+        } catch {
+            console.warn('Failed to save guide to localStorage.');
+        }
+    }
+
+    function loadHistoryFromLocalStorage() {
+        try {
+            const raw = localStorage.getItem(HISTORY_KEY);
+
+            history.value = raw ? JSON.parse(raw) : [];
+        } catch {
+            history.value = [];
+        }
+    }
+
+    function loadGuideFromLocalStorage(id: string): IInterviewGuide | null {
+        try {
+            const raw = localStorage.getItem(GUIDES_KEY);
+
+            if (!raw) {
+                return null;
+            }
+
+            const guides = JSON.parse(raw);
+
+            return guides[id] || null;
+        } catch {
+            return null;
+        }
+    }
+
+    // ── Guide generation ─────────────────────────────────────────────
     async function generate(payload: IGeneratePayload): Promise<void> {
         isLoading.value = true;
         error.value = null;
         startProgress();
+
         try {
             const data = await $fetch<IInterviewGuide>('/api/interview/generate', {
                 method: 'POST',
@@ -13,6 +76,21 @@ export function useInterviewGuide() {
 
             result.value = data;
             finishProgress();
+
+            // Add to history
+            const entry: IHistoryEntry = {
+                id: data.id,
+                candidateName: data.candidateName,
+                roleName: data.roleName,
+                interviewType: data.interviewType,
+                provider: data.provider,
+                totalQuestions: data.sections.reduce((acc, s) => acc + s.questions.length, 0),
+                createdAt: data.generatedAt,
+            };
+
+            history.value.unshift(entry);
+            saveHistoryToLocalStorage();
+            saveGuideToLocalStorage(data);
         } catch (err: unknown) {
             error.value = (err as { message?: string })?.message || 'Failed to generate guide.';
             finishProgress();
@@ -24,39 +102,60 @@ export function useInterviewGuide() {
     // ── History management ─────────────────────────────────────────────
     async function deleteFromHistory(id: string): Promise<void> {
         history.value = history.value.filter((entry) => entry.id !== id);
+        saveHistoryToLocalStorage();
 
-        // Optionally, call API to persist deletion
+        // Also remove guide from localStorage
         try {
-            await $fetch(`/api/interview/history`, {
-                method: 'DELETE',
-                body: { id },
-            });
-        } catch(err: unknown) {
-            // Revert local deletion on failure
-            const deletedEntry = history.value.find((entry) => entry.id === id);
+            const raw = localStorage.getItem(GUIDES_KEY);
 
-            if (deletedEntry) {
-                history.value.push(deletedEntry);
+            if (raw) {
+                const guides = JSON.parse(raw);
+
+                delete guides[id];
+
+                // eslint-disable-next-line
+                localStorage.setItem(GUIDES_KEY, JSON.stringify(guides));
             }
-
-            throw err;
+        } catch {
+            console.warn('Failed to delete guide from localStorage.');
         }
     }
 
     async function clearHistory(): Promise<void> {
         history.value = [];
+        saveHistoryToLocalStorage();
+        localStorage.removeItem(GUIDES_KEY);
+    }
 
-        // Optionally, call API to persist clearing
+    async function loadHistory(): Promise<void> {
+        isHistoryLoading.value = true;
+        loadHistoryFromLocalStorage();
+        isHistoryLoading.value = false;
+    }
+
+    async function loadGuide(id: string): Promise<void> {
+        isLoading.value = true;
+        error.value = null;
+
+        // Use helper to load from localStorage
+        const guide = loadGuideFromLocalStorage(id);
+
+        if (guide) {
+            result.value = guide;
+            isLoading.value = false;
+
+            return;
+        }
+
+        // Fallback to API if not found locally
         try {
-            await $fetch(`/api/interview/history`, {
-                method: 'DELETE',
-                body: { all: true },
-            });
-        } catch(err: unknown) {
-            // Revert local clearing on failure
-            await loadHistory();
+            const data = await $fetch<IInterviewGuide>(`/api/interview/guide/${id}`);
 
-            throw err;
+            result.value = data;
+        } catch {
+            error.value = 'Failed to load guide.';
+        } finally {
+            isLoading.value = false;
         }
     }
 
@@ -65,13 +164,6 @@ export function useInterviewGuide() {
         error.value = null;
         progress.value = 0;
     }
-
-    const result = ref<IInterviewGuide | null>(null);
-    const isLoading = ref(false);
-    const isHistoryLoading = ref(false);
-    const error = ref<string | null>(null);
-    const progress = ref(0);
-    const history = ref<IHistoryEntry[]>([]);
 
     // ── Progress simulation ──────────────────────────────────────────────
     let progressInterval: ReturnType<typeof setInterval> | null = null;
@@ -90,40 +182,10 @@ export function useInterviewGuide() {
             clearInterval(progressInterval);
             progressInterval = null;
         }
-
         progress.value = 100;
     }
 
-    // ── History ─────────────────────────────────────────────────────────
-    async function loadHistory(): Promise<void> {
-        isHistoryLoading.value = true;
-
-        try {
-            const data = await $fetch<IHistoryEntry[]>('/api/interview/history');
-
-            history.value = data;
-        } catch {
-            history.value = [];
-        } finally {
-            isHistoryLoading.value = false;
-        }
-    }
-
-    async function loadGuide(id: string): Promise<void> {
-        isLoading.value = true;
-        error.value = null;
-
-        try {
-            const data = await $fetch<IInterviewGuide>(`/api/interview/guide/${id}`);
-
-            result.value = data;
-        } catch {
-            error.value = 'Failed to load guide.';
-        } finally {
-            isLoading.value = false;
-        }
-    }
-
+    // ── Label helpers ──────────────────────────────────────────────────
     function interviewTypeLabel(type: string): string {
         switch (type) {
             case 'technical':

@@ -3,7 +3,7 @@ import { useInterviewGuide } from '~/composables/useInterviewGuide';
 import { useDateFormat } from '~/composables/useDateFormat';
 import type { IHistoryEntry } from '~/types/index';
 
-const { history, isHistoryLoading, loadGuide, deleteFromHistory, clearHistory, interviewTypeLabel, providerLabel } = useInterviewGuide();
+const { loadHistory, history, isHistoryLoading, loadGuide, deleteFromHistory, clearHistory, interviewTypeLabel, providerLabel } = useInterviewGuide();
 
 const { formatDateTime } = useDateFormat();
 
@@ -12,6 +12,10 @@ const router = useRouter();
 async function openGuide(entry: IHistoryEntry): Promise<void> {
     await router.push(`/interview/${entry.id}`);
 }
+
+onMounted(async () => {
+    await loadHistory();
+});
 
 defineOptions({
     name: 'HistoryPage',
