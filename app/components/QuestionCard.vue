@@ -20,9 +20,9 @@ function toggleExpand(): void {
     isExpanded.value = !isExpanded.value;
 }
 
-function formatSampleAnswer(answer: string): Array<{ type: 'text' | 'code', content: string, lang?: string }> {
+function formatSampleAnswer(answer: string): Array<{ type: 'text' | 'code'; content: string; lang?: string }> {
     // Split answer into text and code blocks (markdown style)
-    const blocks: Array<{ type: 'text' | 'code', content: string, lang?: string }> = [];
+    const blocks: Array<{ type: 'text' | 'code'; content: string; lang?: string }> = [];
     // Support language hints: ```js, ```ts, ```vue
     const regex = /```(\w+)?\n([\s\S]*?)```/g;
     let lastIndex = 0;
@@ -45,10 +45,11 @@ function formatSampleAnswer(answer: string): Array<{ type: 'text' | 'code', cont
     // Fallback: highlight lines that look like code (if no code blocks found)
     if (blocks.length === 1 && blocks[0] && blocks[0].type === 'text') {
         const lines = blocks[0].content.split(/\r?\n/);
-        const codeLineRegex = /^\s*(?:const|let|var|function|interface|class|type|import|export|return|if|for|while|switch|case|catch|async|await|[\]{}()]).*/;
+        const codeLineRegex =
+            /^\s*(?:const|let|var|function|interface|class|type|import|export|return|if|for|while|switch|case|catch|async|await|[\]{}()]).*/;
         let buffer: string[] = [];
         let inCode = false;
-        const fallbackBlocks: Array<{ type: 'text' | 'code', content: string }> = [];
+        const fallbackBlocks: Array<{ type: 'text' | 'code'; content: string }> = [];
 
         for (const line of lines) {
             if (codeLineRegex.test(line)) {
@@ -78,7 +79,7 @@ function formatSampleAnswer(answer: string): Array<{ type: 'text' | 'code', cont
     }
 
     // Highlight code blocks using PrismJS
-    return blocks.map(block => {
+    return blocks.map((block) => {
         if (block.type === 'code') {
             let lang = block.lang || 'javascript';
             let prismLang;
@@ -163,37 +164,50 @@ defineOptions({
                     <div class="question-card__answer-content">
                         <template v-for="(block, i) in formatSampleAnswer(props.question.sampleAnswer)" :key="i">
                             <div v-if="block.type === 'text'">{{ block.content }}</div>
-                            <pre v-else class="code-block"><code :class="'language-' + (block.lang || 'javascript')" :lang="block.lang || 'javascript'" v-html="block.content"></code></pre>
+                            <pre
+                                v-else
+                                class="code-block"
+                            ><code :class="'language-' + (block.lang || 'javascript')" :lang="block.lang || 'javascript'" v-html="block.content"></code></pre>
                         </template>
                     </div>
                 </div>
-                <div v-else-if="['behavioural','situational','culture','leadership'].includes(props.question.category)" class="question-card__answer">
+                <div
+                    v-else-if="['behavioural', 'situational', 'culture', 'leadership'].includes(props.question.category)"
+                    class="question-card__answer"
+                >
                     <strong class="question-card__label">Example answers:</strong>
                     <div class="question-card__answer-content">
                         <ul>
                             <li v-if="props.question.category === 'behavioural'">
-                                "I handled a conflict between team members by facilitating an open discussion, listening to both sides, and helping them find common ground. This improved collaboration and team morale."
+                                "I handled a conflict between team members by facilitating an open discussion, listening to both sides, and
+                                helping them find common ground. This improved collaboration and team morale."
                             </li>
                             <li v-if="props.question.category === 'behavioural'">
-                                "When faced with a tight deadline, I prioritized tasks, communicated clearly with stakeholders, and motivated the team to deliver on time without sacrificing quality."
+                                "When faced with a tight deadline, I prioritized tasks, communicated clearly with stakeholders, and
+                                motivated the team to deliver on time without sacrificing quality."
                             </li>
                             <li v-if="props.question.category === 'situational'">
-                                "If I were assigned a project outside my expertise, I would research best practices, seek advice from experienced colleagues, and break the problem into manageable steps."
+                                "If I were assigned a project outside my expertise, I would research best practices, seek advice from
+                                experienced colleagues, and break the problem into manageable steps."
                             </li>
                             <li v-if="props.question.category === 'situational'">
-                                "If a project suddenly changed scope, I would quickly reassess priorities, communicate the impact to the team, and adjust our plan to stay aligned with business goals."
+                                "If a project suddenly changed scope, I would quickly reassess priorities, communicate the impact to the
+                                team, and adjust our plan to stay aligned with business goals."
                             </li>
                             <li v-if="props.question.category === 'culture'">
-                                "I contribute to a positive team culture by celebrating wins, supporting colleagues, and encouraging open feedback."
+                                "I contribute to a positive team culture by celebrating wins, supporting colleagues, and encouraging open
+                                feedback."
                             </li>
                             <li v-if="props.question.category === 'culture'">
                                 "I value diversity and inclusion, and I make sure all voices are heard during meetings and decision-making."
                             </li>
                             <li v-if="props.question.category === 'leadership'">
-                                "As a leader, I set clear expectations, provide regular feedback, and empower my team to take ownership of their work."
+                                "As a leader, I set clear expectations, provide regular feedback, and empower my team to take ownership of
+                                their work."
                             </li>
                             <li v-if="props.question.category === 'leadership'">
-                                "I mentor junior team members by sharing knowledge, offering guidance, and encouraging their professional growth."
+                                "I mentor junior team members by sharing knowledge, offering guidance, and encouraging their professional
+                                growth."
                             </li>
                         </ul>
                     </div>
@@ -214,7 +228,7 @@ defineOptions({
     padding: var(--gap-lg);
     box-shadow: 0 1px 4px rgb(0 0 0 / 0.03);
 }
-    
+
 .question-card__answer-content {
     font-size: var(--font-size-md);
     color: var(--ink);
@@ -240,7 +254,9 @@ defineOptions({
     border-radius: var(--radius-lg);
     background: var(--surface-elevated, #fff);
     padding: var(--gap-lg);
-    transition: box-shadow var(--transition-medium) ease, border-color var(--transition-medium) ease;
+    transition:
+        box-shadow var(--transition-medium) ease,
+        border-color var(--transition-medium) ease;
 }
 
 .question-card:hover {

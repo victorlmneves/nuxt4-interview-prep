@@ -3,7 +3,8 @@ import { useInterviewGuide } from '~/composables/useInterviewGuide';
 import { useDateFormat } from '~/composables/useDateFormat';
 import type { IHistoryEntry } from '~/types/index';
 
-const { loadHistory, history, isHistoryLoading, loadGuide, deleteFromHistory, clearHistory, interviewTypeLabel, providerLabel } = useInterviewGuide();
+const { loadHistory, history, isHistoryLoading, loadGuide, deleteFromHistory, clearHistory, interviewTypeLabel, providerLabel } =
+    useInterviewGuide();
 
 const { formatDateTime } = useDateFormat();
 

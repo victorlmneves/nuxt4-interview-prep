@@ -21,7 +21,6 @@ const {
     loadHistory,
 } = useInterviewGuide();
 
-
 const { formatDate } = useDateFormat();
 
 // ── Input state ───────────────────────────────────────────────────────────────
@@ -413,9 +412,15 @@ defineOptions({
                     <button class="results-panel__back" @click="reset">← New guide</button>
 
                     <div class="results-panel__meta">
-                        <span class="results-panel__meta-provider font-mono">{{ providerLabel(result && result.provider ? result.provider : '') }}</span>
-                        <span class="results-panel__meta-type font-mono">{{ interviewTypeLabel(result && result.interviewType ? result.interviewType : '') }}</span>
-                        <span class="results-panel__meta-date font-mono">{{ formatDate(result && result.generatedAt ? result.generatedAt : '') }}</span>
+                        <span class="results-panel__meta-provider font-mono">
+                            {{ providerLabel(result && result.provider ? result.provider : '') }}
+                        </span>
+                        <span class="results-panel__meta-type font-mono">
+                            {{ interviewTypeLabel(result && result.interviewType ? result.interviewType : '') }}
+                        </span>
+                        <span class="results-panel__meta-date font-mono">
+                            {{ formatDate(result && result.generatedAt ? result.generatedAt : '') }}
+                        </span>
                     </div>
                 </div>
 
@@ -431,7 +436,10 @@ defineOptions({
                             <p class="candidate__role">{{ result && result.roleName ? result.roleName : '' }}</p>
 
                             <div class="candidate__chips">
-                                <span v-if="result && result.candidate && result.candidate.totalExperience" class="candidate__chip font-mono">
+                                <span
+                                    v-if="result && result.candidate && result.candidate.totalExperience"
+                                    class="candidate__chip font-mono"
+                                >
                                     {{ result.candidate.totalExperience }}
                                 </span>
                                 <span v-if="result && result.candidate && result.candidate.location" class="candidate__chip font-mono">
@@ -454,7 +462,9 @@ defineOptions({
                             <span class="stat__label font-mono">questions</span>
                         </div>
                         <div class="stat">
-                            <span class="stat__value font-serif">{{ result && result.totalDurationMinutes ? result.totalDurationMinutes : 0 }}</span>
+                            <span class="stat__value font-serif">
+                                {{ result && result.totalDurationMinutes ? result.totalDurationMinutes : 0 }}
+                            </span>
                             <span class="stat__label font-mono">minutes</span>
                         </div>
                     </div>
@@ -468,7 +478,12 @@ defineOptions({
 
                 <!-- Sections -->
                 <div class="sections-list">
-                    <InterviewSection v-for="(section, i) in result && result.sections ? result.sections : []" :key="i" :section="section" :index="i" />
+                    <InterviewSection
+                        v-for="(section, i) in result && result.sections ? result.sections : []"
+                        :key="i"
+                        :section="section"
+                        :index="i"
+                    />
                 </div>
 
                 <!-- Closing notes -->
