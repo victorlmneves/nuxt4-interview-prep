@@ -25,7 +25,22 @@ interface INormalizedSection {
     questions: INormalizedQuestion[];
 }
 
-const client = new Anthropic();
+// Lazy Anthropic client (lazy init like Gemini/OpenAI handlers)
+let anthropicClient: Anthropic | null = null;
+
+function getAnthropicClient(): Anthropic {
+    if (anthropicClient) return anthropicClient;
+
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+
+    if (!apiKey) {
+        throw createError({ statusCode: 500, statusMessage: 'Anthropic API key not set.' });
+    }
+
+    anthropicClient = new Anthropic({ apiKey });
+
+    return anthropicClient;
+}
 
 function buildSystemPrompt(): string {
     return `You are an expert technical recruiter and interview coach. 
@@ -92,6 +107,8 @@ ${payload.jobDescription}`;
 }
 
 async function generateWithAnthropic(payload: IGeneratePayload): Promise<string> {
+    const client = getAnthropicClient();
+
     const message = await client.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 4096,
@@ -134,7 +151,10 @@ async function generateWithGemini(payload: IGeneratePayload): Promise<string> {
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey && !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-        throw createError({ statusCode: 500, statusMessage: 'Gemini API key not set and ADC not configured.' });
+        throw createError({
+            statusCode: 500,
+            statusMessage: 'Gemini API key not set and ADC not configured.',
+        });
     }
 
     const genAI = getGeminiClient();
@@ -326,7 +346,11 @@ async function generateWithGPT4o(payload: IGeneratePayload): Promise<string> {
         return JSON.stringify(resp);
     } catch (err: unknown) {
         // Log but don't throw here — let the caller handle downstream parsing/validation.
-        await logLLM({ id: randomUUID(), provider: 'openai', error: (err as Error).message ?? String(err) });
+        await logLLM({
+            id: randomUUID(),
+            provider: 'openai',
+            error: (err as Error).message ?? String(err),
+        });
 
         // Return a minimal valid guide on error to keep the endpoint usable in development
         return JSON.stringify({
@@ -444,13 +468,26 @@ function parseGuideResponse(raw: string, payload: IGeneratePayload): IInterviewG
     const roleName = parsed.roleName || candidateSummary?.roleAppliedFor || parsed.roleName || '';
 
     const candidate = {
-        name: (parsed.candidate && (parsed.candidate as Record<string, unknown>).name) || candidateSummary?.name || candidateName,
+        name:
+            (parsed.candidate && (parsed.candidate as Record<string, unknown>).name) ||
+            candidateSummary?.name ||
+            candidateName,
         currentRole:
-            (parsed.candidate && (parsed.candidate as Record<string, unknown>).currentRole) || candidateSummary?.roleAppliedFor || '',
+            (parsed.candidate && (parsed.candidate as Record<string, unknown>).currentRole) ||
+            candidateSummary?.roleAppliedFor ||
+            '',
         totalExperience:
-            (parsed.candidate && (parsed.candidate as Record<string, unknown>).totalExperience) || candidateSummary?.overallFit || '',
-        location: (parsed.candidate && (parsed.candidate as Record<string, unknown>).location) || candidateSummary?.location || '',
-        education: (parsed.candidate && (parsed.candidate as Record<string, unknown>).education) || candidateSummary?.education || '',
+            (parsed.candidate && (parsed.candidate as Record<string, unknown>).totalExperience) ||
+            candidateSummary?.overallFit ||
+            '',
+        location:
+            (parsed.candidate && (parsed.candidate as Record<string, unknown>).location) ||
+            candidateSummary?.location ||
+            '',
+        education:
+            (parsed.candidate && (parsed.candidate as Record<string, unknown>).education) ||
+            candidateSummary?.education ||
+            '',
         skills: Array.isArray((parsed.candidate as Record<string, unknown>)?.skills)
             ? ((parsed.candidate as Record<string, unknown>).skills as unknown[])
             : Array.isArray(candidateSummary?.keyStrengths)
@@ -486,7 +523,11 @@ function parseGuideResponse(raw: string, payload: IGeneratePayload): IInterviewG
                 const category = normalizeCategory(q.type || q.category || q.kind || 'technical');
                 const difficulty = typeof q.difficulty === 'string' ? q.difficulty.toLowerCase() : 'medium';
                 const rationale = q.rationale || q.focus || (q.notes ? joinToString(q.notes) : '') || '';
-                const followUps = Array.isArray(q.followUps) ? q.followUps : Array.isArray(q.follow_up) ? q.follow_up : [];
+                const followUps = Array.isArray(q.followUps)
+                    ? q.followUps
+                    : Array.isArray(q.follow_up)
+                      ? q.follow_up
+                      : [];
                 const evaluationCriteria = Array.isArray(q.evaluationCriteria)
                     ? q.evaluationCriteria
                     : Array.isArray(q.criteria)
@@ -498,7 +539,12 @@ function parseGuideResponse(raw: string, payload: IGeneratePayload): IInterviewG
                         : typeof q.estimated_minutes === 'number'
                           ? q.estimated_minutes
                           : 5;
-                const sampleAnswer = typeof q.sampleAnswer === 'string' ? q.sampleAnswer : q.sample_answer ? String(q.sample_answer) : '';
+                const sampleAnswer =
+                    typeof q.sampleAnswer === 'string'
+                        ? q.sampleAnswer
+                        : q.sample_answer
+                          ? String(q.sample_answer)
+                          : '';
 
                 return {
                     id,
@@ -517,8 +563,9 @@ function parseGuideResponse(raw: string, payload: IGeneratePayload): IInterviewG
                 typeof rawSection.durationMinutes === 'number'
                     ? rawSection.durationMinutes
                     : questions.reduce(
-                          (acc: number, q: INormalizedQuestion) => acc + (typeof q.estimatedMinutes === 'number' ? q.estimatedMinutes : 5),
-                          0
+                          (acc: number, q: INormalizedQuestion) =>
+                              acc + (typeof q.estimatedMinutes === 'number' ? q.estimatedMinutes : 5),
+                          0,
                       );
 
             sections.push({ title, description, durationMinutes, questions });
@@ -550,10 +597,19 @@ function parseGuideResponse(raw: string, payload: IGeneratePayload): IInterviewG
     const totalDurationMinutes =
         typeof parsed.totalDurationMinutes === 'number'
             ? parsed.totalDurationMinutes
-            : sections.reduce((acc, s) => acc + (typeof s.durationMinutes === 'number' ? s.durationMinutes : 0), 0) || 5;
+            : sections.reduce((acc, s) => acc + (typeof s.durationMinutes === 'number' ? s.durationMinutes : 0), 0) ||
+              5;
 
-    const openingNotes = parsed.openingNotes ? joinToString(parsed.openingNotes) : parsed.opening ? joinToString(parsed.opening) : '';
-    const closingNotes = parsed.closingNotes ? joinToString(parsed.closingNotes) : parsed.closing ? joinToString(parsed.closing) : '';
+    const openingNotes = parsed.openingNotes
+        ? joinToString(parsed.openingNotes)
+        : parsed.opening
+          ? joinToString(parsed.opening)
+          : '';
+    const closingNotes = parsed.closingNotes
+        ? joinToString(parsed.closingNotes)
+        : parsed.closing
+          ? joinToString(parsed.closing)
+          : '';
 
     const result: IInterviewGuide = {
         id: randomUUID(),
@@ -581,15 +637,28 @@ export default defineEventHandler(async (event) => {
     const body = await readBody<IGeneratePayload>(event);
 
     if (!body.cvText || !body.jobDescription) {
-        throw createError({ statusCode: 400, statusMessage: 'CV text and job description are required.' });
-    }
-
-    if (!body.provider) {
-        throw createError({ statusCode: 400, statusMessage: 'Provider is required.' });
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'CV text and job description are required.',
+        });
     }
 
     const requestId = randomUUID();
     const startMs = Date.now();
+
+    if (!body.provider) {
+        // Default to Gemini when provider is not supplied by the request.
+        // You can override this default with the `DEFAULT_LLM_PROVIDER` env var.
+        body.provider = ((process.env.DEFAULT_LLM_PROVIDER as string) || 'gemini') as 'anthropic' | 'openai' | 'gemini';
+
+        // Log the defaulting event for observability/debugging
+        await logLLM({
+            id: requestId,
+            provider: body.provider,
+            note: 'no_provider_in_request_defaulted',
+        });
+    }
+
     let rawResponse: string;
     let modelName: string;
 
@@ -731,10 +800,20 @@ export default defineEventHandler(async (event) => {
                     });
                 }
             } else {
-                await logLLM({ id: requestId, provider: body.provider, note: 'no_balanced_json_found', failedAt: 'parse_extracted' });
+                await logLLM({
+                    id: requestId,
+                    provider: body.provider,
+                    note: 'no_balanced_json_found',
+                    failedAt: 'parse_extracted',
+                });
             }
         } catch (e) {
-            await logLLM({ id: requestId, provider: body.provider, error: String(e), failedAt: 'parse_extraction_error' });
+            await logLLM({
+                id: requestId,
+                provider: body.provider,
+                error: String(e),
+                failedAt: 'parse_extraction_error',
+            });
         }
 
         // 3) single regenerate attempt (same model) to recover from malformed outputs
@@ -753,7 +832,13 @@ export default defineEventHandler(async (event) => {
                         newRaw = await generateWithGemini(body);
                     }
 
-                    await logLLM({ id: requestId, provider: body.provider, attempt, note: 'parse_regenerate_call', rawResponse: newRaw });
+                    await logLLM({
+                        id: requestId,
+                        provider: body.provider,
+                        attempt,
+                        note: 'parse_regenerate_call',
+                        rawResponse: newRaw,
+                    });
 
                     try {
                         return parseGuideResponse(newRaw, body);
@@ -793,17 +878,30 @@ export default defineEventHandler(async (event) => {
                         id: requestId,
                         provider: body.provider,
                         attempt,
-                        error: { message: (errCall as Error).message, stack: (errCall as Error).stack },
+                        error: {
+                            message: (errCall as Error).message,
+                            stack: (errCall as Error).stack,
+                        },
                         failedAt: 'regenerate_call',
                     });
                 }
             }
         } catch (e) {
-            await logLLM({ id: requestId, provider: body.provider, error: String(e), failedAt: 'parse_regen_error' });
+            await logLLM({
+                id: requestId,
+                provider: body.provider,
+                error: String(e),
+                failedAt: 'parse_regen_error',
+            });
         }
 
         // 4) give up and return a safe fallback to avoid HTTP 500
-        await logLLM({ id: requestId, provider: body.provider, note: 'returning_fallback_after_parse_failures', failedAt: 'parse_final' });
+        await logLLM({
+            id: requestId,
+            provider: body.provider,
+            note: 'returning_fallback_after_parse_failures',
+            failedAt: 'parse_final',
+        });
 
         return createFallbackGuide(body);
     }
@@ -817,7 +915,10 @@ export default defineEventHandler(async (event) => {
         await logLLM({
             id: requestId,
             provider: body.provider,
-            error: { message: (errUnexpected as Error).message, stack: (errUnexpected as Error).stack },
+            error: {
+                message: (errUnexpected as Error).message,
+                stack: (errUnexpected as Error).stack,
+            },
             failedAt: 'parse_unexpected',
         });
         throw createError({ statusCode: 500, statusMessage: 'Failed to parse LLM response' });
@@ -918,9 +1019,17 @@ export default defineEventHandler(async (event) => {
 
         if (!validated) {
             // Map zod errors for client-friendly output
-            const mapped = lastValidation.error.errors.map((e) => ({ path: e.path.join('.'), message: e.message }));
+            const mapped = lastValidation.error.errors.map((e) => ({
+                path: e.path.join('.'),
+                message: e.message,
+            }));
 
-            await logLLM({ id: requestId, provider: body.provider, mappedValidationErrors: mapped, failedAt: 'validation_failed' });
+            await logLLM({
+                id: requestId,
+                provider: body.provider,
+                mappedValidationErrors: mapped,
+                failedAt: 'validation_failed',
+            });
 
             throw createError({
                 statusCode: 422,
