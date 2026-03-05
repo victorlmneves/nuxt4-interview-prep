@@ -77,7 +77,8 @@ The JSON must follow this exact structure:
           "rationale": string,
           "followUps": string[],
           "evaluationCriteria": string[],
-          "estimatedMinutes": number
+          "estimatedMinutes": number,
+          "sampleAnswer": string
         }
       ]
     }
@@ -98,6 +99,12 @@ function buildUserPrompt(payload: IGeneratePayload): string {
 ${typeInstruction}
 
 Generate 3-4 sections with 3-5 questions each. Make questions specific to the candidate's experience and the role requirements.
+
+For EVERY question, provide a detailed 'sampleAnswer' that demonstrates how a strong candidate should respond. The answer should be specific to the candidate's background and the role.
+
+CRITICAL INSTRUCTIONS:
+- Extract the candidate's NAME from the CV and include it in the "candidateName" field at the top level. This is REQUIRED.
+- Use ONLY these exact category values: "technical", "behavioural", "situational", "culture", "leadership", or "problemSolving".
 
 --- CANDIDATE CV ---
 ${payload.cvText}
@@ -462,9 +469,33 @@ function parseGuideResponse(raw: string, payload: IGeneratePayload): IInterviewG
         return 'technical';
     };
 
+    // Fallback: extract candidate name from CV if not in JSON
+    const extractNameFromCV = (cvText: string): string => {
+        const lines = cvText.split('\n').filter((line) => line.trim().length > 0);
+
+        if (lines.length > 0) {
+            const firstLine = lines[0]!.trim();
+
+            // Return first line if it looks like a name (not too long, no common CV headers)
+            if (
+                firstLine.length < 100 &&
+                !firstLine.toLowerCase().match(/(cv|resume|objective|experience|education)/i)
+            ) {
+                return firstLine;
+            }
+        }
+
+        return 'Unknown';
+    };
+
     // Top-level candidate normalization
     const candidateSummary = (parsed.candidateSummary || parsed.candidate || {}) as Record<string, unknown>;
-    const candidateName = parsed.candidateName || (candidateSummary?.name as string | undefined) || 'Unknown';
+    let candidateName =
+        parsed.candidateName || (candidateSummary?.name as string | undefined) || extractNameFromCV(payload.cvText);
+
+    if (!candidateName || candidateName === 'Unknown') {
+        candidateName = extractNameFromCV(payload.cvText);
+    }
     const roleName = parsed.roleName || candidateSummary?.roleAppliedFor || parsed.roleName || '';
 
     const candidate = {
@@ -488,11 +519,12 @@ function parseGuideResponse(raw: string, payload: IGeneratePayload): IInterviewG
             (parsed.candidate && (parsed.candidate as Record<string, unknown>).education) ||
             candidateSummary?.education ||
             '',
-        skills: Array.isArray((parsed.candidate as Record<string, unknown>)?.skills)
-            ? ((parsed.candidate as Record<string, unknown>).skills as unknown[])
-            : Array.isArray(candidateSummary?.keyStrengths)
-              ? candidateSummary.keyStrengths
-              : [],
+        skills:
+            parsed.candidate && Array.isArray((parsed.candidate as Record<string, unknown>).skills)
+                ? ((parsed.candidate as Record<string, unknown>).skills as unknown[])
+                : Array.isArray(candidateSummary?.keyStrengths)
+                  ? candidateSummary.keyStrengths
+                  : [],
     };
 
     // Sections normalization: strip unknown keys, map alternate keys
