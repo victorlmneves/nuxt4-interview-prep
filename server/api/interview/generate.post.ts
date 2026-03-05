@@ -1,6 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { randomUUID } from 'node:crypto';
+import { logLLM } from '#server/utils/llmLogger';
+import { validateGuide } from '#server/validation/guideSchema';
 import type { IInterviewGuide, IGeneratePayload } from '~/types/index';
 
 const client = new Anthropic();
@@ -172,13 +174,19 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 400, statusMessage: 'Provider is required.' });
     }
 
+    const requestId = randomUUID();
+    const startMs = Date.now();
     let rawResponse: string;
+    let modelName = '';
 
     if (body.provider === 'anthropic') {
+        modelName = 'claude-sonnet-4-20250514';
         rawResponse = await generateWithAnthropic(body);
     } else if (body.provider === 'openai') {
+        modelName = 'gpt-4o'; // placeholder name for logs
         rawResponse = await generateWithGPT4o(body);
     } else if (body.provider === 'gemini') {
+        modelName = 'gemini-2.5-flash';
         rawResponse = await generateWithGemini(body);
     } else {
         throw createError({
@@ -186,6 +194,19 @@ export default defineEventHandler(async (event) => {
             statusMessage: `Unknown AI provider: ${body.provider}`,
         });
     }
+
+    const durationMs = Date.now() - startMs;
+
+    // Log raw LLM output (best-effort, redacting long inputs)
+    await logLLM({
+        id: requestId,
+        provider: body.provider,
+        model: modelName,
+        durationMs,
+        rawResponse,
+        cvSnippet: typeof body.cvText === 'string' ? body.cvText.slice(0, 200) : null,
+        jobSnippet: typeof body.jobDescription === 'string' ? body.jobDescription.slice(0, 200) : null,
+    });
 
     // Placeholder Gemini handler
     async function generateWithGemini(payload) {
@@ -244,7 +265,129 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const guide = parseGuideResponse(rawResponse, body);
+    let guide;
+
+    try {
+        guide = parseGuideResponse(rawResponse, body);
+    } catch (err: unknown) {
+        // Log parse errors with the raw response
+        await logLLM({
+            id: requestId,
+            provider: body.provider,
+            error: { message: (err as Error).message, stack: (err as Error).stack },
+            rawResponse,
+            failedAt: 'parse',
+        });
+
+        throw createError({ statusCode: 500, statusMessage: 'Failed to parse LLM response' });
+    }
+
+    // Validate parsed guide against Zod schema
+    const firstValidation = validateGuide(guide);
+
+    if (!firstValidation.success) {
+        // Log validation failure and raw response
+        await logLLM({
+            id: requestId,
+            provider: body.provider,
+            validationErrors: firstValidation.error.errors,
+            rawResponse,
+            failedAt: 'validation_initial',
+        });
+
+        // Attempt a single automatic regenerate to recover from malformed output
+        const maxRetries = 1;
+        let attempt = 0;
+        let validated = false;
+        let lastValidation = firstValidation;
+
+        while (attempt < maxRetries && !validated) {
+            attempt += 1;
+            const regenStart = Date.now();
+            let newRaw: string;
+
+            try {
+                if (body.provider === 'anthropic') {
+                    newRaw = await generateWithAnthropic(body);
+                } else if (body.provider === 'openai') {
+                    newRaw = await generateWithGPT4o(body);
+                } else if (body.provider === 'gemini') {
+                    newRaw = await generateWithGemini(body);
+                } else {
+                    break;
+                }
+            } catch (err: unknown) {
+                await logLLM({
+                    id: requestId,
+                    provider: body.provider,
+                    attempt,
+                    error: { message: (err as Error).message, stack: (err as Error).stack },
+                    failedAt: 'regenerate_call',
+                });
+
+                break;
+            }
+
+            const regenDuration = Date.now() - regenStart;
+
+            await logLLM({
+                id: requestId,
+                provider: body.provider,
+                attempt,
+                regenDuration,
+                rawResponse: newRaw,
+                note: 'regenerate attempt',
+            });
+
+            try {
+                guide = parseGuideResponse(newRaw, body);
+            } catch (err: unknown) {
+                await logLLM({
+                    id: requestId,
+                    provider: body.provider,
+                    attempt,
+                    error: { message: (err as Error).message, stack: (err as Error).stack },
+                    rawResponse: newRaw,
+                    failedAt: 'parse_regen',
+                });
+
+                continue;
+            }
+
+            const secondValidation = validateGuide(guide);
+
+            if (!secondValidation.success) {
+                await logLLM({
+                    id: requestId,
+                    provider: body.provider,
+                    attempt,
+                    validationErrors: secondValidation.error.errors,
+                    rawResponse: newRaw,
+                    failedAt: 'validation_regen',
+                });
+                lastValidation = secondValidation;
+
+                continue;
+            }
+
+            validated = true;
+
+            break;
+        }
+
+        if (!validated) {
+            // Map zod errors for client-friendly output
+            const mapped = lastValidation.error.errors.map((e) => ({ path: e.path.join('.'), message: e.message }));
+
+            await logLLM({ id: requestId, provider: body.provider, mappedValidationErrors: mapped, failedAt: 'validation_failed' });
+
+            throw createError({
+                statusCode: 422,
+                statusMessage: 'LLM response failed schema validation',
+                data: { requestId, errors: mapped } as Record<string, unknown>,
+            });
+        }
+    }
 
     guideStore.set(guide.id, guide);
 

@@ -17,15 +17,16 @@ defineOptions({
 </template>
 
 <style scoped lang="scss">
+@use '../assets/scss/variables' as vars;
+@use '../assets/scss/mixins' as mixins;
+
 .app-header {
     position: sticky;
     top: 0;
     z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2rem;
-    height: 56px;
+    @include mixins.flex(row, space-between, center);
+    padding: 0 var(--header-padding-inline);
+    height: var(--header-height);
     background: var(--paper);
     border-bottom: 1px solid var(--border);
     backdrop-filter: blur(8px);
@@ -43,8 +44,7 @@ defineOptions({
     }
 
     &__nav {
-        display: flex;
-        align-items: center;
+        @include mixins.flex(row, flex-start, center);
         gap: 0.5rem;
     }
 }

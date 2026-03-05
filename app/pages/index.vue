@@ -27,7 +27,7 @@ const { formatDate } = useDateFormat();
 // ── Input state ───────────────────────────────────────────────────────────────
 const cvText = ref('');
 const jobDescription = ref('');
-const provider = ref<TProvider>('anthropic');
+const provider = ref<TProvider>('gemini');
 const interviewType = ref<TInterviewType>('mixed');
 const cvInputMode = ref<'paste' | 'upload'>('paste');
 const jdInputMode = ref<'paste' | 'upload'>('paste');
@@ -89,6 +89,7 @@ function onJDFileInput(e: Event): void {
         handleJDFile(file);
     }
 }
+
 async function handleFile(file: File): Promise<void> {
     uploadedFileName.value = file.name;
 
@@ -174,8 +175,6 @@ const canSubmit = computed(() => {
     return cvText.value.trim().length > 0 && jobDescription.value.trim().length > 0;
 });
 
-
-
 onMounted(() => {
     loadHistory();
 });
@@ -191,7 +190,7 @@ defineOptions({
         <AppHeader>
             <NuxtLink to="/history" class="nav-btn">History</NuxtLink>
 
-            <button class="nav-btn" :class="{ 'nav-btn--active': showHistory }" @click="showHistory = !showHistory">
+            <button :class="['nav-btn', { 'nav-btn--active': showHistory }]" @click="showHistory = !showHistory">
                 Recent
                 <span v-if="history.length > 0" class="nav-btn__badge">{{ history.length }}</span>
             </button>
@@ -378,8 +377,7 @@ defineOptions({
                             <button
                                 v-for="t in interviewTypes"
                                 :key="t"
-                                class="options-row__btn"
-                                :class="{ 'options-btn--active': interviewType === t }"
+                                :class="['options-row__btn', { 'options-row__btn--active': interviewType === t }]"
                                 @click="interviewType = t"
                             >
                                 {{ interviewTypeLabel(t) }}
@@ -394,8 +392,7 @@ defineOptions({
                             <button
                                 v-for="p in providers"
                                 :key="p"
-                                class="options-row__btn"
-                                :class="{ 'options-btn--active': provider === p }"
+                                :class="['options-row__btn', { 'options-row__btn--active': provider === p }]"
                                 @click="provider = p"
                             >
                                 {{ providerLabel(p) }}

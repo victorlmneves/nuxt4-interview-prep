@@ -1,7 +1,11 @@
+@use './variables' as *;
+@use './mixins' as *;
+
 // ── Design tokens ─────────────────────────────────────────────────────────────
 :root {
     --paper: #faf9f7;
     --surface: #f2f0ec;
+    --grey: #4c4c4c;
     --border: #e4e1da;
     --ink: #1a1916;
     --ink-muted: #6b6860;
@@ -11,6 +15,70 @@
     --red: #c42b1a;
     --purple: #7c3aed;
     --blue: #0369a1;
+    
+    /* Size tokens */
+    --font-size-base: 15px;
+    --line-height-base: 1.6;
+    --max-width: 900px;
+
+    /* spacing / gaps */
+    --gap-xxs: 0.25rem;
+    --gap-xs: 0.4rem;
+    --gap-sm: 0.5rem;
+    --gap-md: 0.75rem;
+    --gap-lg: 1rem;
+    --gap-xl: 1.5rem;
+    --gap-xxl: 2.5rem;
+
+    /* container paddings */
+    --container-padding-top: 2.5rem;
+    --container-padding-sides: 1.5rem;
+    --container-padding-bottom: 4rem;
+
+    /* radii */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-chip: 20px;
+    --radius-pill: 999px;
+
+    /* buttons / controls */
+    --btn-padding: 0.35rem 0.85rem;
+    --btn-padding-lg: 0.6rem 1.5rem;
+    --btn-font-size: 0.8rem;
+    --btn-gap: 0.4rem;
+
+    --chip-padding: 2px 8px;
+    --chip-font-size: 0.7rem;
+
+    /* sizes */
+    --header-height: 56px;
+    --header-padding-inline: 2rem;
+    --control-size-sm: 1.6rem;
+
+    /* transitions */
+    --transition-fast: 0.15s;
+    --transition-medium: 0.2s;
+
+    /* additional small tokens */
+    --radius-xs: 4px;
+    --radius-xxs: 2px;
+    --badge-padding-inline: 6px;
+    --badge-font-size: 0.65rem;
+    --font-size-sm: 0.75rem;
+    --font-size-md: 0.95rem;
+    --progress-height: 3px;
+    --progress-radius: 2px;
+    --gap-1-25: 1.25rem;
+    --gap-2: 2rem;
+
+    /* additional convenience tokens */
+    --font-size-lg: 1.2rem;
+    --code-block-padding: 0.7em 1em;
+    --badge-padding: 0.35rem 0.5rem;
+    --gap-xxxs: 0.2rem;
+    --control-size-xs: 28px;
+    --avatar-size: 44px;
 }
 
 // ── Resets ────────────────────────────────────────────────────────────────────
@@ -26,8 +94,8 @@ body {
     background: var(--paper);
     color: var(--ink);
     font-family: 'Instrument Sans', 'Helvetica Neue', sans-serif;
-    font-size: 15px;
-    line-height: 1.6;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
     -webkit-font-smoothing: antialiased;
 }
 
@@ -37,4 +105,18 @@ body {
 
 .font-mono {
     font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+// ── Layout ─────────────────────────────────────────────────────────────────────
+.app-shell {
+    min-height: 100vh;
+    @include flex(column);
+}
+
+.main-content {
+    flex: 1;
+    max-width: var(--max-width);
+    width: 100%;
+    margin: 0 auto;
+    padding: var(--container-padding-top) var(--container-padding-sides) var(--container-padding-bottom);
 }

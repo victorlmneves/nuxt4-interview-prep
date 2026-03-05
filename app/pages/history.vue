@@ -83,15 +83,15 @@ defineOptions({
 </template>
 
 <style scoped lang="scss">
+@use '../assets/scss/variables' as vars;
+@use '../assets/scss/mixins' as mixins;
+
 .history-page {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+    @include mixins.flex(column);
+    gap: vars.$gap-2;
 
     &__header {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
+        @include mixins.flex(row, space-between, baseline);
     }
 
     &__title {
@@ -100,26 +100,22 @@ defineOptions({
     }
 
     &__loading {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
+        @include mixins.flex(column);
+        gap: vars.$gap-lg;
     }
 
     &__skeleton {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        padding: 1rem;
+        @include mixins.flex(column);
+        gap: vars.$gap-sm;
+        padding: vars.$gap-lg;
         border: 1px solid var(--border);
-        border-radius: 10px;
+        border-radius: vars.$radius-md;
     }
 
     &__empty {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1.5rem;
-        padding: 4rem 0;
+        @include mixins.flex(column, flex-start, center);
+        gap: vars.$gap-xl;
+        padding: vars.$container-padding-bottom 0;
         color: var(--ink-muted);
         text-align: center;
 
@@ -129,14 +125,13 @@ defineOptions({
     }
 
     &__grid {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
+        @include mixins.flex(column);
+        gap: vars.$gap-md;
     }
 }
 
 .skeleton {
-    border-radius: 4px;
+    border-radius: vars.$radius-xs;
     background: var(--border);
     animation: pulse 1.5s infinite;
 
@@ -162,16 +157,15 @@ defineOptions({
 }
 
 .history-entry {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
+    @include mixins.flex(row, flex-start, center);
+    gap: vars.$gap-lg;
+    padding: vars.$gap-lg vars.$gap-1-25;
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: vars.$radius-md;
     cursor: pointer;
     transition:
-        border-color 0.15s,
-        box-shadow 0.15s;
+        border-color vars.$transition-fast,
+        box-shadow vars.$transition-fast;
 
     &:hover {
         border-color: var(--accent);
@@ -179,32 +173,29 @@ defineOptions({
     }
 
     &__avatar {
-        width: 44px;
-        height: 44px;
+        width: vars.$avatar-size;
+        height: vars.$avatar-size;
         border-radius: 50%;
         background: var(--accent);
         color: var(--paper);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
+        @include mixins.center(row);
+        font-size: vars.$font-size-lg;
         flex-shrink: 0;
     }
 
     &__body {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
+        @include mixins.flex(column);
+        gap: vars.$gap-xxs;
         flex: 1;
         min-width: 0;
     }
 
     &__name {
-        font-size: 0.95rem;
+        font-size: vars.$font-size-md;
     }
 
     &__role {
-        font-size: 0.8rem;
+        font-size: vars.$btn-font-size;
         color: var(--ink-muted);
         white-space: nowrap;
         overflow: hidden;
@@ -212,41 +203,35 @@ defineOptions({
     }
 
     &__chips {
-        display: flex;
+        @include mixins.flex(row, flex-start, center);
         flex-wrap: wrap;
-        gap: 0.35rem;
-        margin-top: 0.25rem;
+        gap: vars.$gap-xs;
+        margin-top: vars.$gap-xxs;
     }
 
     &__chip {
-        font-size: 0.65rem;
-        padding: 2px 8px;
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        color: var(--ink-muted);
+        @include mixins.chip();
     }
 
     &__right {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 0.5rem;
+        @include mixins.flex(column, flex-start, flex-end);
+        gap: vars.$gap-sm;
         flex-shrink: 0;
     }
 
     &__date {
-        font-size: 0.7rem;
+        font-size: vars.$chip-font-size;
         color: var(--ink-muted);
     }
 
     &__delete {
         background: none;
         border: none;
-        font-size: 0.75rem;
+        font-size: vars.$font-size-sm;
         cursor: pointer;
         color: var(--ink-muted);
         opacity: 0.4;
-        transition: opacity 0.15s;
+        transition: opacity vars.$transition-fast;
 
         &:hover {
             opacity: 1;
@@ -256,18 +241,7 @@ defineOptions({
 }
 
 .nav-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.35rem 0.85rem;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: transparent;
-    color: var(--ink);
-    font-size: 0.8rem;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.15s;
+    @include mixins.btn();
 
     &:hover {
         border-color: var(--accent);
@@ -278,7 +252,7 @@ defineOptions({
 .text-btn {
     background: none;
     border: none;
-    font-size: 0.8rem;
+    font-size: vars.$btn-font-size;
     cursor: pointer;
 
     &--danger {

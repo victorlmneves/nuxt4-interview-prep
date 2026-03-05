@@ -1,5 +1,5 @@
-<script setup>
-defineProps({ error: Object });
+<script setup lang="ts">
+defineProps<{ error: { message: string } }>();
 </script>
 
 <template>

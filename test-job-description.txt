@@ -1,0 +1,41 @@
+Tech Lead – Product Engineering
+FinanceFlow · Lisbon (Hybrid, 3 days/week) · Full-time
+
+ABOUT THE ROLE
+We're looking for a Tech Lead to own the technical direction of our core product — a B2B SaaS platform for financial operations teams. You'll split your time between hands-on engineering (60%) and technical leadership (40%): setting architecture standards, running design reviews, mentoring mid/senior engineers, and collaborating with product and design.
+
+This is not a pure management role. We expect you to ship code every sprint.
+
+RESPONSIBILITIES
+- Own architecture decisions for the frontend and backend of the platform
+- Lead a team of 5 engineers; run 1:1s, unblock, mentor, grow them
+- Define and enforce coding standards, review PRs, champion quality
+- Collaborate with the CTO on technical roadmap and quarterly planning
+- Drive adoption of best practices: observability, testing, CI/CD, incident response
+- Work closely with Product and Design from discovery through delivery
+
+REQUIREMENTS — MUST HAVE
+- 6+ years of software engineering experience
+- Strong proficiency in TypeScript, both frontend (Vue or React) and backend (Node.js)
+- Experience with PostgreSQL or another relational database at scale
+- Solid understanding of cloud infrastructure (AWS or GCP preferred)
+- Prior experience leading or formally mentoring engineers
+- Comfortable owning incidents and on-call responsibilities
+- Fluent English (working language of the team)
+
+REQUIREMENTS — NICE TO HAVE
+- Experience with GraphQL APIs
+- Familiarity with infrastructure-as-code (Terraform, Pulumi)
+- Background in fintech, payments, or regulated industries
+- Experience with Nuxt or Next.js
+
+TECH STACK
+Vue 3 · Nuxt 3 · TypeScript · Node.js · GraphQL · PostgreSQL · Redis · AWS · Docker · Terraform · GitHub Actions · Datadog
+
+WHAT WE OFFER
+- Competitive salary (€65,000 – €85,000 depending on experience)
+- Hybrid work (Lisbon office, 3 days/week)
+- €2,000/year learning budget
+- 25 days holiday + public holidays
+- Health insurance
+- Stock options

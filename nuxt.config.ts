@@ -1,3 +1,5 @@
+import path from 'path';
+
 export default defineNuxtConfig({
     compatibilityDate: '2024-11-01',
 
@@ -19,7 +21,11 @@ export default defineNuxtConfig({
         preload: true,
     },
 
-    css: ['~/assets/styles/global.scss'],
+    alias: {
+        '~': path.resolve(__dirname, './app'),
+    },
+
+    css: ['~/assets/scss/global.scss'],
 
     runtimeConfig: {
         anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? '',

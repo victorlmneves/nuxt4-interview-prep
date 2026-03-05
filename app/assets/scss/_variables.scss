@@ -1,0 +1,81 @@
+// SCSS aliases for runtime CSS variables (used in mixins and components)
+$paper: var(--paper);
+$surface: var(--surface);
+$border: var(--border);
+$grey: var(--grey);
+$ink: var(--ink);
+$ink-muted: var(--ink-muted);
+$accent: var(--accent);
+$green: var(--green);
+$amber: var(--amber);
+$red: var(--red);
+$purple: var(--purple);
+$blue: var(--blue);
+
+// Size tokens (SCSS aliases for CSS custom properties)
+$font-size-base: var(--font-size-base);
+$line-height-base: var(--line-height-base);
+$max-width: var(--max-width);
+
+// spacing / gaps
+$gap-xxs: var(--gap-xxs);
+$gap-xs: var(--gap-xs);
+$gap-sm: var(--gap-sm);
+$gap-md: var(--gap-md);
+$gap-lg: var(--gap-lg);
+$gap-xl: var(--gap-xl);
+$gap-xxl: var(--gap-xxl);
+
+// container padding
+$container-padding-top: var(--container-padding-top);
+$container-padding-sides: var(--container-padding-sides);
+$container-padding-bottom: var(--container-padding-bottom);
+
+// radii
+$radius-sm: var(--radius-sm);
+$radius-md: var(--radius-md);
+$radius-lg: var(--radius-lg);
+$radius-chip: var(--radius-chip);
+$radius-pill: var(--radius-pill);
+$radius-xs: var(--radius-xs);
+$radius-xxs: var(--radius-xxs);
+
+// buttons / controls
+$btn-padding: var(--btn-padding);
+$btn-padding-lg: var(--btn-padding-lg);
+$btn-font-size: var(--btn-font-size);
+$btn-gap: var(--btn-gap);
+
+$chip-padding: var(--chip-padding);
+$chip-font-size: var(--chip-font-size);
+
+$badge-padding-inline: var(--badge-padding-inline);
+$badge-font-size: var(--badge-font-size);
+
+// small/medium font sizes
+$font-size-sm: var(--font-size-sm);
+$font-size-md: var(--font-size-md);
+
+// sizes
+$header-height: var(--header-height);
+$control-size-sm: var(--control-size-sm);
+
+// progress / small radii
+$progress-height: var(--progress-height);
+$progress-radius: var(--progress-radius);
+
+// extra gaps
+$gap-1-25: var(--gap-1-25);
+$gap-2: var(--gap-2);
+
+// Convenience aliases for additional tokens
+$font-size-lg: var(--font-size-lg);
+$code-block-padding: var(--code-block-padding);
+$badge-padding: var(--badge-padding);
+$gap-xxxs: var(--gap-xxxs);
+$control-size-xs: var(--control-size-xs);
+$avatar-size: var(--avatar-size);
+
+// transitions
+$transition-fast: var(--transition-fast);
+$transition-medium: var(--transition-medium);

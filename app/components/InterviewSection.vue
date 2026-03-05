@@ -30,62 +30,62 @@ defineOptions({
 </template>
 
 <style scoped lang="scss">
+@use '../assets/scss/variables' as vars;
+@use '../assets/scss/mixins' as mixins;
+
 .interview-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    @include mixins.flex(column);
+    gap: var(--gap-lg);
+
     &__header {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
+        @include mixins.flex(column);
+        gap: var(--gap-sm);
     }
+
     &__title-row {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
+        @include mixins.flex(row, flex-start, center);
+        gap: var(--gap-md);
     }
     &__number {
-        width: 28px;
-        height: 28px;
+        width: var(--control-size-xs);
+        height: var(--control-size-xs);
         border-radius: 50%;
         background: var(--accent);
         color: var(--paper);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1rem;
+        @include mixins.flex(row, center, center);
+        font-size: var(--font-size-md);
         font-weight: 600;
         box-shadow: 0 1px 4px rgb(0 0 0 / 0.04);
         flex-shrink: 0;
     }
 
     &__title {
-        font-size: 1.15rem;
+        font-size: var(--font-size-lg);
         font-weight: 600;
         letter-spacing: -0.01em;
         margin: 0;
     }
 
     &__duration {
-        font-size: 0.85rem;
+        font-size: var(--font-size-sm);
         color: var(--ink-muted);
         background: var(--surface);
-        border-radius: 12px;
-        padding: 2px 10px;
+        border-radius: var(--radius-lg);
+        padding: var(--chip-padding);
         font-weight: 500;
     }
 
     &__description {
-        font-size: 0.98rem;
+        font-size: var(--font-size-md);
         color: var(--ink-muted);
-        margin: 0.2rem 0 0.5rem 0;
+        margin: var(--gap-xxxs) 0 0.5rem 0;
     }
 
     &__questions {
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
-        margin-top: 0.5rem;
+        gap: var(--gap-xl);
+        margin-top: var(--gap-sm);
     }
 }
 </style>

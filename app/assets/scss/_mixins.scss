@@ -1,0 +1,49 @@
+// Utility mixins and placeholders (use variables via module)
+@use 'variables' as vars;
+
+@mixin flex($dir: row, $justify: flex-start, $align: stretch) {
+  display: flex;
+  flex-direction: $dir;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+@mixin center($dir: row) {
+  @include flex($dir, center, center);
+}
+
+@mixin card($bg: vars.$surface, $radius: vars.$radius-md, $border-color: vars.$border) {
+  background: $bg;
+  border: 1px solid $border-color;
+  border-radius: $radius;
+}
+
+@mixin btn($padding: vars.$btn-padding, $radius: vars.$radius-sm, $bg: transparent, $color: vars.$ink, $fontSize: vars.$btn-font-size) {
+  @include center(row);
+  gap: vars.$btn-gap;
+  padding: $padding;
+  border: 1px solid vars.$border;
+  border-radius: $radius;
+  background: $bg;
+  color: $color;
+  font-size: $fontSize;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all vars.$transition-fast;
+}
+
+%chip {
+  font-size: vars.$chip-font-size;
+  padding: vars.$chip-padding;
+  border: 1px solid vars.$border;
+  border-radius: vars.$radius-chip;
+  color: vars.$ink-muted;
+}
+
+@mixin chip() {
+  font-size: vars.$chip-font-size;
+  padding: vars.$chip-padding;
+  border: 1px solid vars.$border;
+  border-radius: vars.$radius-chip;
+  color: vars.$ink-muted;
+}

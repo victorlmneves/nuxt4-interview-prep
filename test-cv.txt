@@ -1,0 +1,62 @@
+João Ferreira
+Senior Full-Stack Developer
+Lisbon, Portugal | joao.ferreira@email.com | linkedin.com/in/joaoferreira | github.com/jferreira
+
+SUMMARY
+Full-stack developer with 7 years of experience building scalable web applications for fintech and e-commerce clients. Strong background in Vue.js, Node.js and AWS. Led a cross-functional team of 6 developers for 2 years. Looking for a technical leadership role with a focus on product engineering.
+
+EXPERIENCE
+
+Senior Software Engineer — Fintech Startup (remote)
+March 2021 – Present (3 years 11 months)
+
+- Architected and delivered a real-time payment processing dashboard processing €4M+ daily transactions using Vue 3, Nuxt 3 and Node.js microservices
+- Reduced page load time by 62% through lazy loading, CDN optimisation and server-side rendering
+- Led migration from REST to GraphQL (Apollo), cutting API response payload size by 40%
+- Mentored 4 junior developers through weekly 1:1s and code reviews; 3 were promoted to mid-level within 18 months
+- Introduced automated E2E testing with Playwright; raised test coverage from 18% to 74%
+- On call rotation (1 week/month); resolved P0 incidents within SLA 96% of the time
+
+Tech: Vue 3, Nuxt 3, Node.js, GraphQL, PostgreSQL, Redis, AWS (EC2, RDS, S3, Lambda), Docker, Terraform
+
+Mid-level Developer — Digital Agency
+June 2018 – February 2021 (2 years 8 months)
+
+- Built 12 client websites and web apps using Vue 2, Laravel and MySQL
+- Integrated payment gateways (Stripe, MB Way) for 4 e-commerce clients
+- Delivered projects on time and within budget 9/12 engagements; 3 delayed due to client-side scope creep
+- Started using Git properly mid-2019; prior to that relied on FTP deploys and manual backups
+
+Tech: Vue 2, Laravel, MySQL, jQuery, Bootstrap, Stripe API
+
+Junior Developer — Small Software House
+September 2016 – May 2018 (1 year 8 months)
+
+- Maintained and extended a legacy PHP/jQuery internal ERP system used by 300+ employees
+- Built internal reporting dashboards using Chart.js and vanilla JS
+
+EDUCATION
+BSc Computer Science — Instituto Superior Técnico, Lisbon (2013–2016)
+Graduated 14/20
+
+CERTIFICATIONS
+AWS Certified Solutions Architect – Associate (2022)
+MongoDB Developer Certification (2021, expired 2023 — not renewed)
+
+SKILLS
+Languages: JavaScript (expert), TypeScript (advanced), Python (beginner), PHP (intermediate)
+Frontend: Vue 3, Nuxt 3, React (self-taught, side projects only), HTML/CSS
+Backend: Node.js, Express, GraphQL, Laravel, REST APIs
+Databases: PostgreSQL, MySQL, Redis, MongoDB
+Cloud & DevOps: AWS, Docker, Terraform, GitHub Actions, Nginx
+Testing: Playwright, Jest, Vitest
+
+LANGUAGES
+Portuguese (native), English (C1), Spanish (basic)
+
+SIDE PROJECTS
+Open source contributions to Nuxt ecosystem (3 merged PRs)
+Personal finance tracker built with Nuxt 4 + Supabase (in progress)
+
+NOTES
+Available from April 2025. Prefer remote or hybrid (Lisbon area). Not interested in pure management roles — want to stay hands-on with code.

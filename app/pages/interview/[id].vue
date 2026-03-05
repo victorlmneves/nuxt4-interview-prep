@@ -126,6 +126,9 @@ defineOptions({
 </template>
 
 <style scoped lang="scss">
+@use '../../assets/scss/variables' as vars;
+@use '../../assets/scss/mixins' as mixins;
+
 .main-content {
     max-width: 900px;
     margin: 0 auto;
@@ -133,16 +136,12 @@ defineOptions({
 }
 
 .loading-panel {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include mixins.center();
     min-height: 50vh;
 
     &__inner {
         text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        @include mixins.flex(column, center, center);
         gap: 1rem;
     }
 
@@ -175,13 +174,11 @@ defineOptions({
 }
 
 .results-panel {
-    display: flex;
-    flex-direction: column;
+    @include mixins.flex(column);
     gap: 1.5rem;
 
     &__header {
-        display: flex;
-        align-items: center;
+        @include mixins.flex(row, flex-start, center);
         gap: 1rem;
     }
 
@@ -203,8 +200,7 @@ defineOptions({
 
     &__meta {
         margin-left: auto;
-        display: flex;
-        align-items: center;
+        @include mixins.flex(row, flex-start, center);
         gap: 0.75rem;
     }
 
@@ -220,9 +216,7 @@ defineOptions({
 }
 
 .hero-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    @include mixins.flex(row, space-between, center);
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -230,14 +224,13 @@ defineOptions({
     gap: 1.5rem;
 
     &__left {
-        display: flex;
-        align-items: center;
+        @include mixins.flex(row, flex-start, center);
         gap: 1rem;
         flex: 1;
     }
 
     &__stats {
-        display: flex;
+        @include mixins.flex(row);
         gap: 2rem;
         flex-shrink: 0;
     }
@@ -250,16 +243,13 @@ defineOptions({
         border-radius: 50%;
         background: var(--accent);
         color: var(--paper);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        @include mixins.center(row);
         font-size: 1.4rem;
         flex-shrink: 0;
     }
 
     &__info {
-        display: flex;
-        flex-direction: column;
+        @include mixins.flex(column);
         gap: 0.25rem;
     }
 
@@ -274,18 +264,14 @@ defineOptions({
     }
 
     &__chips {
-        display: flex;
+        @include mixins.flex(row, flex-start, center);
         flex-wrap: wrap;
         gap: 0.4rem;
         margin-top: 0.25rem;
     }
 
     &__chip {
-        font-size: 0.7rem;
-        padding: 2px 8px;
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        color: var(--ink-muted);
+        @include mixins.chip();
     }
 }
 
@@ -313,8 +299,7 @@ defineOptions({
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 1.25rem 1.5rem;
-    display: flex;
-    flex-direction: column;
+    @include mixins.flex(column);
     gap: 1rem;
 
     &--highlight {
@@ -335,23 +320,12 @@ defineOptions({
 }
 
 .sections-list {
-    display: flex;
-    flex-direction: column;
+    @include mixins.flex(column);
     gap: 2.5rem;
 }
 
 .nav-btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.35rem 0.85rem;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: transparent;
-    color: var(--ink);
-    font-size: 0.8rem;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.15s;
+    @include mixins.btn();
 
     &:hover {
         border-color: var(--accent);

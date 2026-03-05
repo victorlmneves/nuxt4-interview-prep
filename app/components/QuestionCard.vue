@@ -113,7 +113,7 @@ defineOptions({
 </script>
 
 <template>
-    <div class="question-card" :class="{ 'question-card--expanded': isExpanded }">
+    <div :class="['question-card', { 'question-card--expanded': isExpanded }]">
         <div class="question-card__header" @click="toggleExpand">
             <div class="question-card__meta">
                 <span class="question-card__index font-mono">Q{{ props.index + 1 }}</span>
@@ -204,18 +204,21 @@ defineOptions({
 </template>
 
 <style scoped lang="scss">
+@use '../assets/scss/variables' as vars;
+@use '../assets/scss/mixins' as mixins;
+
 .question-card__answer {
-    margin-top: 1.2rem;
+    margin-top: var(--gap-1-25);
     background: var(--surface);
-    border-radius: 8px;
-    padding: 1rem;
+    border-radius: var(--radius-md);
+    padding: var(--gap-lg);
     box-shadow: 0 1px 4px rgb(0 0 0 / 0.03);
 }
     
 .question-card__answer-content {
-    font-size: 0.98rem;
+    font-size: var(--font-size-md);
     color: var(--ink);
-    margin-top: 0.2rem;
+    margin-top: var(--gap-xxxs);
     white-space: pre-line;
     word-break: break-word;
 }
@@ -224,20 +227,20 @@ defineOptions({
     background: #f6f8fa;
     color: #222;
     font-family: 'JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-    font-size: 0.95rem;
-    border-radius: 6px;
-    padding: 0.7em 1em;
-    margin: 0.7em 0;
+    font-size: var(--font-size-md);
+    border-radius: var(--radius-sm);
+    padding: var(--code-block-padding);
+    margin: var(--gap-md) 0;
     overflow-x: auto;
     box-shadow: 0 1px 4px rgb(0 0 0 / 0.03);
 }
 
 .question-card {
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     background: var(--surface-elevated, #fff);
-    padding: 1rem;
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    padding: var(--gap-lg);
+    transition: box-shadow var(--transition-medium) ease, border-color var(--transition-medium) ease;
 }
 
 .question-card:hover {
@@ -249,40 +252,37 @@ defineOptions({
 }
 
 .question-card__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
+    @include mixins.flex(row, space-between, center);
+    gap: var(--gap-md);
     cursor: pointer;
     user-select: none;
 }
 
 .question-card__meta {
-    display: flex;
-    align-items: center;
+    @include mixins.flex(row, flex-start, center);
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--gap-sm);
 }
 
 .question-card__index,
 .question-card__category,
 .question-card__difficulty,
 .question-card__time {
-    font-size: 0.78rem;
+    font-size: var(--font-size-sm);
     line-height: 1;
-    padding: 0.35rem 0.5rem;
-    border-radius: 999px;
+    padding: var(--badge-padding);
+    border-radius: var(--radius-pill);
     background: var(--surface);
     border: 1px solid var(--border);
 }
 
 .question-card__toggle {
-    width: 1.6rem;
-    height: 1.6rem;
+    width: var(--control-size-sm);
+    height: var(--control-size-sm);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     border: 1px solid var(--border);
     font-weight: 700;
     color: var(--ink);
@@ -290,19 +290,18 @@ defineOptions({
 }
 
 .question-card__details {
-    margin-top: 1rem;
-    padding: 1rem;
+    margin-top: var(--gap-lg);
+    padding: var(--gap-lg);
     background: var(--surface);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     box-shadow: 0 2px 8px rgb(0 0 0 / 0.04);
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
+    @include mixins.flex(column);
+    gap: var(--gap-lg);
 }
 
 .question-card__label {
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: var(--font-size-md);
     margin-bottom: 0.3rem;
     display: block;
 }
@@ -310,20 +309,20 @@ defineOptions({
 .question-card__rationale,
 .question-card__followups,
 .question-card__criteria {
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--gap-sm);
 }
 
 .question-card__followups ul,
 .question-card__criteria ul {
-    margin: 0.3rem 0 0 1.2rem;
+    margin: 0.3rem 0 0 var(--gap-1-25);
     padding: 0;
     list-style: disc inside;
-    font-size: 0.95rem;
+    font-size: var(--font-size-md);
     color: var(--ink-muted);
 }
 
 .question-card__text {
-    margin: 0.9rem 0 0;
+    margin: var(--gap-lg) 0 0;
     color: var(--ink);
     line-height: 1.5;
 }
@@ -331,7 +330,7 @@ defineOptions({
 /* Transition for <Transition name="expand"> */
 .expand-enter-active,
 .expand-leave-active {
-    transition: all 0.2s ease;
+    transition: all var(--transition-medium) ease;
     overflow: hidden;
 }
 
