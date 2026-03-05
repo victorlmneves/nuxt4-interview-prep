@@ -2,7 +2,13 @@ export type TProvider = 'anthropic' | 'openai' | 'gemini';
 
 export type TInterviewType = 'technical' | 'behavioural' | 'mixed';
 
-export type TQuestionCategory = 'technical' | 'behavioural' | 'situational' | 'culture' | 'leadership' | 'problemSolving';
+export type TQuestionCategory =
+    | 'technical'
+    | 'behavioural'
+    | 'situational'
+    | 'culture'
+    | 'leadership'
+    | 'problemSolving';
 
 export type TDifficulty = 'easy' | 'medium' | 'hard';
 

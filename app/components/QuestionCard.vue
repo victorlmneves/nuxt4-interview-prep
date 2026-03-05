@@ -34,7 +34,11 @@ function formatSampleAnswer(answer: string): Array<{ type: 'text' | 'code'; cont
         }
 
         // match[1] is the language, match[2] is the code
-        blocks.push({ type: 'code', lang: match[1] ? match[1].toLowerCase() : 'javascript', content: match[2].trim() });
+        blocks.push({
+            type: 'code',
+            lang: match[1] ? match[1].toLowerCase() : 'javascript',
+            content: match[2].trim(),
+        });
         lastIndex = regex.lastIndex;
     }
 
@@ -147,16 +151,26 @@ defineOptions({
                     <strong class="question-card__label">Rationale:</strong>
                     <p>{{ props.question.rationale }}</p>
                 </div>
-                <div v-if="props.question.followUps && props.question.followUps.length" class="question-card__followups">
+                <div
+                    v-if="props.question.followUps && props.question.followUps.length"
+                    class="question-card__followups"
+                >
                     <strong class="question-card__label">Follow-up questions:</strong>
                     <ul>
-                        <li v-for="(followUp, i) in props.question.followUps" :key="i">{{ followUp }}</li>
+                        <li v-for="(followUp, i) in props.question.followUps" :key="i">
+                            {{ followUp }}
+                        </li>
                     </ul>
                 </div>
-                <div v-if="props.question.evaluationCriteria && props.question.evaluationCriteria.length" class="question-card__criteria">
+                <div
+                    v-if="props.question.evaluationCriteria && props.question.evaluationCriteria.length"
+                    class="question-card__criteria"
+                >
                     <strong class="question-card__label">Evaluation criteria:</strong>
                     <ul>
-                        <li v-for="(criteria, i) in props.question.evaluationCriteria" :key="i">{{ criteria }}</li>
+                        <li v-for="(criteria, i) in props.question.evaluationCriteria" :key="i">
+                            {{ criteria }}
+                        </li>
                     </ul>
                 </div>
                 <div v-if="props.question.sampleAnswer" class="question-card__answer">
@@ -172,42 +186,46 @@ defineOptions({
                     </div>
                 </div>
                 <div
-                    v-else-if="['behavioural', 'situational', 'culture', 'leadership'].includes(props.question.category)"
+                    v-else-if="
+                        ['behavioural', 'situational', 'culture', 'leadership'].includes(props.question.category)
+                    "
                     class="question-card__answer"
                 >
                     <strong class="question-card__label">Example answers:</strong>
                     <div class="question-card__answer-content">
                         <ul>
                             <li v-if="props.question.category === 'behavioural'">
-                                "I handled a conflict between team members by facilitating an open discussion, listening to both sides, and
-                                helping them find common ground. This improved collaboration and team morale."
+                                "I handled a conflict between team members by facilitating an open discussion, listening
+                                to both sides, and helping them find common ground. This improved collaboration and team
+                                morale."
                             </li>
                             <li v-if="props.question.category === 'behavioural'">
-                                "When faced with a tight deadline, I prioritized tasks, communicated clearly with stakeholders, and
-                                motivated the team to deliver on time without sacrificing quality."
+                                "When faced with a tight deadline, I prioritized tasks, communicated clearly with
+                                stakeholders, and motivated the team to deliver on time without sacrificing quality."
                             </li>
                             <li v-if="props.question.category === 'situational'">
-                                "If I were assigned a project outside my expertise, I would research best practices, seek advice from
-                                experienced colleagues, and break the problem into manageable steps."
+                                "If I were assigned a project outside my expertise, I would research best practices,
+                                seek advice from experienced colleagues, and break the problem into manageable steps."
                             </li>
                             <li v-if="props.question.category === 'situational'">
-                                "If a project suddenly changed scope, I would quickly reassess priorities, communicate the impact to the
-                                team, and adjust our plan to stay aligned with business goals."
+                                "If a project suddenly changed scope, I would quickly reassess priorities, communicate
+                                the impact to the team, and adjust our plan to stay aligned with business goals."
                             </li>
                             <li v-if="props.question.category === 'culture'">
-                                "I contribute to a positive team culture by celebrating wins, supporting colleagues, and encouraging open
-                                feedback."
+                                "I contribute to a positive team culture by celebrating wins, supporting colleagues, and
+                                encouraging open feedback."
                             </li>
                             <li v-if="props.question.category === 'culture'">
-                                "I value diversity and inclusion, and I make sure all voices are heard during meetings and decision-making."
+                                "I value diversity and inclusion, and I make sure all voices are heard during meetings
+                                and decision-making."
                             </li>
                             <li v-if="props.question.category === 'leadership'">
-                                "As a leader, I set clear expectations, provide regular feedback, and empower my team to take ownership of
-                                their work."
+                                "As a leader, I set clear expectations, provide regular feedback, and empower my team to
+                                take ownership of their work."
                             </li>
                             <li v-if="props.question.category === 'leadership'">
-                                "I mentor junior team members by sharing knowledge, offering guidance, and encouraging their professional
-                                growth."
+                                "I mentor junior team members by sharing knowledge, offering guidance, and encouraging
+                                their professional growth."
                             </li>
                         </ul>
                     </div>

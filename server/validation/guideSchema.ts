@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
-export const QuestionCategory = z.enum(['technical', 'behavioural', 'situational', 'culture', 'leadership', 'problemSolving']);
+export const QuestionCategory = z.enum([
+    'technical',
+    'behavioural',
+    'situational',
+    'culture',
+    'leadership',
+    'problemSolving',
+]);
 
 export const DifficultyEnum = z.enum(['easy', 'medium', 'hard']);
 

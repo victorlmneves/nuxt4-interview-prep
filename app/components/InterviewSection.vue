@@ -24,7 +24,12 @@ defineOptions({
             <p class="interview-section__description">{{ props.section.description }}</p>
         </div>
         <div class="interview-section__questions">
-            <QuestionCard v-for="(question, i) in props.section.questions" :key="question.id" :question="question" :index="i" />
+            <QuestionCard
+                v-for="(question, i) in props.section.questions"
+                :key="question.id"
+                :question="question"
+                :index="i"
+            />
         </div>
     </div>
 </template>

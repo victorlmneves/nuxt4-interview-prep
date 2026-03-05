@@ -64,9 +64,15 @@ defineOptions({
                     <button class="results-panel__back" @click="goBack">← Back</button>
 
                     <div class="results-panel__meta">
-                        <span class="results-panel__meta-provider font-mono">{{ providerLabel(result.provider) }}</span>
-                        <span class="results-panel__meta-type font-mono">{{ interviewTypeLabel(result.interviewType) }}</span>
-                        <span class="results-panel__meta-date font-mono">{{ formatDate(result.generatedAt) }}</span>
+                        <span class="results-panel__meta-provider font-mono">
+                            {{ providerLabel(result.provider) }}
+                        </span>
+                        <span class="results-panel__meta-type font-mono">
+                            {{ interviewTypeLabel(result.interviewType) }}
+                        </span>
+                        <span class="results-panel__meta-date font-mono">
+                            {{ formatDate(result.generatedAt) }}
+                        </span>
                     </div>
                 </div>
 
@@ -101,7 +107,9 @@ defineOptions({
                             <span class="stat__label font-mono">questions</span>
                         </div>
                         <div class="stat">
-                            <span class="stat__value font-serif">{{ result.totalDurationMinutes }}</span>
+                            <span class="stat__value font-serif">
+                                {{ result.totalDurationMinutes }}
+                            </span>
                             <span class="stat__label font-mono">minutes</span>
                         </div>
                     </div>

@@ -91,7 +91,10 @@ export async function logLLM(entry: Record<string, unknown>): Promise<void> {
         }
 
         const sanitized = sanitizeEntry(entry);
-        const payload: Record<string, unknown> = { ...sanitized, loggedAt: new Date().toISOString() };
+        const payload: Record<string, unknown> = {
+            ...sanitized,
+            loggedAt: new Date().toISOString(),
+        };
         let line = JSON.stringify(payload) + '\n';
 
         if (Buffer.byteLength(line, 'utf8') > MAX_ENTRY_BYTES) {

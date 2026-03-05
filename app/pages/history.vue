@@ -3,14 +3,23 @@ import { useInterviewGuide } from '~/composables/useInterviewGuide';
 import { useDateFormat } from '~/composables/useDateFormat';
 import type { IHistoryEntry } from '~/types/index';
 
-const { loadHistory, history, isHistoryLoading, loadGuide, deleteFromHistory, clearHistory, interviewTypeLabel, providerLabel } =
-    useInterviewGuide();
+const {
+    loadHistory,
+    history,
+    isHistoryLoading,
+    loadGuide,
+    deleteFromHistory,
+    clearHistory,
+    interviewTypeLabel,
+    providerLabel,
+} = useInterviewGuide();
 
 const { formatDateTime } = useDateFormat();
 
 const router = useRouter();
 
 async function openGuide(entry: IHistoryEntry): Promise<void> {
+    await loadGuide(entry.id); // Preload the guide data before navigating to the detail page for a smoother experience
     await router.push(`/interview/${entry.id}`);
 }
 
@@ -34,7 +43,9 @@ defineOptions({
                 <div class="history-page__header">
                     <h1 class="history-page__title font-serif">Interview History</h1>
 
-                    <button v-if="history.length > 0" class="text-btn text-btn--danger" @click="clearHistory">Clear all</button>
+                    <button v-if="history.length > 0" class="text-btn text-btn--danger" @click="clearHistory">
+                        Clear all
+                    </button>
                 </div>
 
                 <div v-if="isHistoryLoading" class="history-page__loading">
@@ -74,7 +85,13 @@ defineOptions({
                             <span class="history-entry__date font-mono">
                                 {{ formatDateTime(entry.createdAt) }}
                             </span>
-                            <button class="history-entry__delete" title="Delete" @click.stop="deleteFromHistory(entry.id)">✕</button>
+                            <button
+                                class="history-entry__delete"
+                                title="Delete"
+                                @click.stop="deleteFromHistory(entry.id)"
+                            >
+                                ✕
+                            </button>
                         </div>
                     </div>
                 </div>

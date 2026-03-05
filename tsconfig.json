@@ -9,6 +9,10 @@
         "skipDefaultLibCheck": true,
         "noImplicitAny": false,
         "types": ["node"],
-        "typeRoots": ["./node_modules/@types", "./app/types"]
+        "typeRoots": ["./node_modules/@types", "./app/types"],
+        "paths": {
+            "~/*": ["./app/*"],
+            "@/*": ["./app/*"]
+        }
     }
 }

@@ -13,7 +13,9 @@ export default defineEventHandler(async (event) => {
                 roleName: guide.roleName,
                 interviewType: guide.interviewType,
                 provider: guide.provider,
-                totalQuestions: Array.isArray(guide.sections) ? guide.sections.reduce((acc, s) => acc + (s.questions?.length || 0), 0) : 0,
+                totalQuestions: Array.isArray(guide.sections)
+                    ? guide.sections.reduce((acc, s) => acc + (s.questions?.length || 0), 0)
+                    : 0,
                 createdAt: guide.generatedAt,
             }));
 

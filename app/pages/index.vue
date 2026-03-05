@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
 import { useInterviewGuide } from '~/composables/useInterviewGuide';
 import { useDateFormat } from '~/composables/useDateFormat';
 import type { TProvider, TInterviewType, IHistoryEntry } from '~/types/index';
@@ -203,7 +202,9 @@ defineOptions({
                     <h3 class="font-serif">Recent Guides</h3>
 
                     <div class="history-sidebar__actions">
-                        <button v-if="history.length > 0" class="text-btn text-btn--danger" @click="clearHistory">Clear all</button>
+                        <button v-if="history.length > 0" class="text-btn text-btn--danger" @click="clearHistory">
+                            Clear all
+                        </button>
                         <button class="history-sidebar__close" @click="showHistory = false">✕</button>
                     </div>
                 </div>
@@ -222,14 +223,26 @@ defineOptions({
                 <ul v-else class="history-list">
                     <li v-for="entry in history" :key="entry.id" class="history-list__item" @click="loadEntry(entry)">
                         <div class="history-list__item-body">
-                            <strong class="history-list__candidate">{{ entry.candidateName }}</strong>
+                            <strong class="history-list__candidate">
+                                {{ entry.candidateName }}
+                            </strong>
                             <span class="history-list__role">{{ entry.roleName }}</span>
                         </div>
 
                         <div class="history-list__item-meta">
-                            <span class="history-list__type font-mono">{{ interviewTypeLabel(entry.interviewType) }}</span>
-                            <span class="history-list__date font-mono">{{ formatDate(entry.createdAt) }}</span>
-                            <button class="history-list__delete" title="Delete guide" @click.stop="deleteFromHistory(entry.id)">✕</button>
+                            <span class="history-list__type font-mono">
+                                {{ interviewTypeLabel(entry.interviewType) }}
+                            </span>
+                            <span class="history-list__date font-mono">
+                                {{ formatDate(entry.createdAt) }}
+                            </span>
+                            <button
+                                class="history-list__delete"
+                                title="Delete guide"
+                                @click.stop="deleteFromHistory(entry.id)"
+                            >
+                                ✕
+                            </button>
                         </div>
                     </li>
                 </ul>
@@ -251,8 +264,8 @@ defineOptions({
                         <em>tailored to every candidate</em>
                     </h1>
                     <p class="input-panel__subtitle">
-                        Upload a CV and job description. Get a structured, personalised interview guide with technical and behavioural
-                        questions — tailored to the candidate's profile and role.
+                        Upload a CV and job description. Get a structured, personalised interview guide with technical
+                        and behavioural questions — tailored to the candidate's profile and role.
                     </p>
                 </div>
 
@@ -295,7 +308,13 @@ defineOptions({
                             @dragleave="isDraggingOver = false"
                             @drop.prevent="onDrop"
                         >
-                            <input id="cv-file" type="file" accept=".txt,.pdf,.docx" class="dropzone__file-input" @change="onFileInput" />
+                            <input
+                                id="cv-file"
+                                type="file"
+                                accept=".txt,.pdf,.docx"
+                                class="dropzone__file-input"
+                                @change="onFileInput"
+                            />
 
                             <label for="cv-file" class="dropzone__label">
                                 <span class="dropzone__icon">↑</span>
@@ -350,7 +369,13 @@ defineOptions({
                             @dragleave="isJDDraggingOver = false"
                             @drop.prevent="onJDDrop"
                         >
-                            <input id="jd-file" type="file" accept=".txt,.pdf,.docx" class="dropzone__file-input" @change="onJDFileInput" />
+                            <input
+                                id="jd-file"
+                                type="file"
+                                accept=".txt,.pdf,.docx"
+                                class="dropzone__file-input"
+                                @change="onJDFileInput"
+                            />
 
                             <label for="jd-file" class="dropzone__label">
                                 <span class="dropzone__icon">↑</span>
@@ -444,12 +469,20 @@ defineOptions({
                 <div class="hero-card">
                     <div class="hero-card__left">
                         <div class="candidate__avatar font-serif">
-                            {{ result && result.candidate && result.candidate.name ? result.candidate.name.charAt(0) : '?' }}
+                            {{
+                                result && result.candidate && result.candidate.name
+                                    ? result.candidate.name.charAt(0)
+                                    : '?'
+                            }}
                         </div>
 
                         <div class="candidate__info">
-                            <h2 class="candidate__name font-serif">{{ result && result.candidateName ? result.candidateName : '' }}</h2>
-                            <p class="candidate__role">{{ result && result.roleName ? result.roleName : '' }}</p>
+                            <h2 class="candidate__name font-serif">
+                                {{ result && result.candidateName ? result.candidateName : '' }}
+                            </h2>
+                            <p class="candidate__role">
+                                {{ result && result.roleName ? result.roleName : '' }}
+                            </p>
 
                             <div class="candidate__chips">
                                 <span
@@ -458,10 +491,16 @@ defineOptions({
                                 >
                                     {{ result.candidate.totalExperience }}
                                 </span>
-                                <span v-if="result && result.candidate && result.candidate.location" class="candidate__chip font-mono">
+                                <span
+                                    v-if="result && result.candidate && result.candidate.location"
+                                    class="candidate__chip font-mono"
+                                >
                                     {{ result.candidate.location }}
                                 </span>
-                                <span v-if="result && result.candidate && result.candidate.education" class="candidate__chip font-mono">
+                                <span
+                                    v-if="result && result.candidate && result.candidate.education"
+                                    class="candidate__chip font-mono"
+                                >
                                     {{ result.candidate.education }}
                                 </span>
                             </div>
@@ -470,7 +509,9 @@ defineOptions({
 
                     <div class="hero-card__stats">
                         <div class="stat">
-                            <span class="stat__value font-serif">{{ result && result.sections ? result.sections.length : 0 }}</span>
+                            <span class="stat__value font-serif">
+                                {{ result && result.sections ? result.sections.length : 0 }}
+                            </span>
                             <span class="stat__label font-mono">sections</span>
                         </div>
                         <div class="stat">
