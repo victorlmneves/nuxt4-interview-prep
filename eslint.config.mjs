@@ -15,10 +15,10 @@ const jsBaseRules = {
     'brace-style': ['error', '1tbs', { allowSingleLine: false }], // Never allow one-liner
     'padding-line-between-statements': [
         'error',
-        { blankLine: 'always', prev: '*', next: 'return' }, // Linha em branco antes do return
-        { blankLine: 'always', prev: 'if', next: 'if' }, // Linha em branco entre IFs
-        { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' }, // Linha após declarações
-        { blankLine: 'any', prev: ['const', 'let', 'var'], next: ['const', 'let', 'var'] }, // Exceto entre declarações
+        { blankLine: 'always', prev: '*', next: 'return' }, // Empty line before return
+        { blankLine: 'always', prev: 'if', next: 'if' }, // Empty line between IFs
+        { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' }, // Empty line after declarations
+        { blankLine: 'any', prev: ['const', 'let', 'var'], next: ['const', 'let', 'var'] }, // Except between declarations
     ],
     'nonblock-statement-body-position': ['error', 'below'], // Body always in a new line
 };
