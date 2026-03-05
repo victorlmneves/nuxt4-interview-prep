@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useInterviewGuide } from '~/composables/useInterviewGuide';
 import { onMounted } from 'vue';
+import { useInterviewGuide } from '~/composables/useInterviewGuide';
 import { useDateFormat } from '~/composables/useDateFormat';
 import type { TProvider, TInterviewType, IHistoryEntry } from '~/types/index';
 
@@ -10,6 +10,7 @@ const {
     isLoading,
     isHistoryLoading,
     error,
+    progress,
     history,
     generate,
     loadGuide,
@@ -403,6 +404,21 @@ defineOptions({
                 </div>
 
                 <p v-if="error" class="error-msg">{{ error }}</p>
+            </section>
+
+            <!-- Loading state -->
+            <section v-if="isLoading" class="loading-panel animate-fade-in">
+                <div class="loading-panel__inner">
+                    <div class="loading-panel__icon font-serif">⟳</div>
+                    <h2 class="loading-panel__title font-serif">Generating interview guide…</h2>
+                    <p class="loading-panel__sub">Analysing profile, crafting questions, structuring guide</p>
+
+                    <div class="progress-bar">
+                        <div class="progress-bar__fill" :style="{ width: progress + '%' }" />
+                    </div>
+
+                    <span class="progress-bar__label font-mono">{{ Math.round(progress) }}%</span>
+                </div>
             </section>
 
             <!-- Results -->
