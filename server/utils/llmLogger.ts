@@ -70,6 +70,11 @@ function sanitizeEntry(entry: Record<string, unknown>): Record<string, unknown> 
 }
 
 export async function logLLM(entry: Record<string, unknown>): Promise<void> {
+    // Only log if DEBUG_LLM is explicitly set to true
+    if (!process.env.DEBUG_LLM || process.env.DEBUG_LLM === 'false') {
+        return;
+    }
+
     try {
         await mkdir(LOG_DIR, { recursive: true });
 

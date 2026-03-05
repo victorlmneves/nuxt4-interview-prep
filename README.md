@@ -121,7 +121,7 @@ Implemented under `server/api` and exposed at `/api/*` during development:
 
 - **LLM output handling & validation:** The generator now normalizes and sanitizes LLM outputs before Zod validation — it maps alternate keys (e.g. `candidateSummary` → `candidate`), extracts balanced JSON blocks from noisy model text, converts arrays to strings for `openingNotes`/`closingNotes`, and coerces question fields to the expected shape. On validation failures the server will attempt a single automatic regenerate and log detailed validation errors; if parsing/validation still fails it returns a safe fallback guide so the UI remains usable.
 
-- **LLM logging & rotation:** `server/utils/llmLogger.ts` writes JSONL to `server/logs/llm.jsonl`. It now sanitizes/truncates large fields and performs size-based rotation (when the file exceeds ~5 MB it is renamed to `llm-<timestamp>.jsonl`). Use these logs to debug parsing/validation issues and to inspect raw/regenerated outputs.
+- **LLM logging & rotation:** `server/utils/llmLogger.ts` writes JSONL to `server/logs/llm.jsonl` when `DEBUG_LLM=true` is set. It sanitizes/truncates large fields and performs size-based rotation (when the file exceeds ~5 MB it is renamed to `llm-<timestamp>.jsonl`). Use these logs to debug parsing/validation issues and to inspect raw/regenerated outputs. To enable: `DEBUG_LLM=true pnpm dev` or set `DEBUG_LLM=true` in `.env`.
 
 - **Development notes:** For local development the server will return fallback guides when provider keys are missing or APIs return errors; for production, ensure API keys and ADC are configured and switch the in-memory `guide` store to a persistent DB. Do not commit `.env` or service account JSON files to source control.
 

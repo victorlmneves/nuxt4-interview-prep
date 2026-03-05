@@ -12,6 +12,7 @@ node_modules/
 
 # Logs
 *.log
+server/logs/
 
 # OS
 .DS_Store
