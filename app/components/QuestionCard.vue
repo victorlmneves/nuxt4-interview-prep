@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import Prism from 'prismjs';
+import MarkdownIt from 'markdown-it';
 import { useInterviewGuide } from '~/composables/useInterviewGuide';
 import type { IInterviewQuestion } from '~/types/index';
 import 'prismjs/themes/prism.css';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-markup';
+
+const md = new MarkdownIt();
 
 interface IProps {
     question: IInterviewQuestion;
@@ -18,6 +21,34 @@ const { categoryColor, difficultyColor } = useInterviewGuide();
 
 function toggleExpand(): void {
     isExpanded.value = !isExpanded.value;
+}
+
+function escapeHtml(value: string): string {
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function renderInlineMarkdown(value: string): string {
+    let out = escapeHtml(value);
+
+    out = out.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+    out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    out = out.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+    out = out.replace(/_([^_\n]+)_/g, '<em>$1</em>');
+    out = out.replace(
+        /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
+    );
+
+    return out;
+}
+
+function renderMarkdownText(markdown: string): string {
+    return md.render(markdown);
 }
 
 function formatSampleAnswer(answer: string): Array<{ type: 'text' | 'code'; content: string; lang?: string }> {
@@ -79,7 +110,20 @@ function formatSampleAnswer(answer: string): Array<{ type: 'text' | 'code'; cont
             fallbackBlocks.push({ type: inCode ? 'code' : 'text', content: buffer.join('\n') });
         }
 
-        return fallbackBlocks;
+        return fallbackBlocks.map((block) => {
+            if (block.type === 'code') {
+                return {
+                    type: 'code',
+                    content: Prism.highlight(block.content, Prism.languages.javascript, 'javascript'),
+                    lang: 'javascript',
+                };
+            }
+
+            return {
+                ...block,
+                content: renderMarkdownText(block.content),
+            };
+        });
     }
 
     // Highlight code blocks using PrismJS
@@ -108,7 +152,10 @@ function formatSampleAnswer(answer: string): Array<{ type: 'text' | 'code'; cont
             };
         }
 
-        return block;
+        return {
+            ...block,
+            content: renderMarkdownText(block.content),
+        };
     });
 }
 
@@ -177,7 +224,7 @@ defineOptions({
                     <strong class="question-card__label">Sample answer:</strong>
                     <div class="question-card__answer-content">
                         <template v-for="(block, i) in formatSampleAnswer(props.question.sampleAnswer)" :key="i">
-                            <div v-if="block.type === 'text'">{{ block.content }}</div>
+                            <div v-if="block.type === 'text'" class="markdown-block" v-html="block.content" />
                             <pre
                                 v-else
                                 class="code-block"
@@ -253,6 +300,41 @@ defineOptions({
     margin-top: var(--gap-xxxs);
     white-space: pre-line;
     word-break: break-word;
+}
+
+.markdown-block {
+    line-height: 1.6;
+}
+
+.markdown-block :deep(p),
+.markdown-block :deep(ul),
+.markdown-block :deep(ol),
+.markdown-block :deep(h1),
+.markdown-block :deep(h2),
+.markdown-block :deep(h3) {
+    margin: 0 0 var(--gap-sm);
+}
+
+.markdown-block :deep(ul),
+.markdown-block :deep(ol) {
+    padding-left: var(--gap-lg);
+}
+
+.markdown-block :deep(li) {
+    margin-bottom: var(--gap-xxs);
+}
+
+.markdown-block :deep(a) {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.markdown-block :deep(code) {
+    background: #eef2f7;
+    border-radius: var(--radius-xs);
+    padding: 0.1rem 0.35rem;
+    font-family: 'JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+    font-size: 0.92em;
 }
 
 .code-block {

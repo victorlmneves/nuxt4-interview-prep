@@ -12,7 +12,8 @@
         "typeRoots": ["./node_modules/@types", "./app/types"],
         "paths": {
             "~/*": ["./app/*"],
-            "@/*": ["./app/*"]
+            "@/*": ["./app/*"],
+            "#server/*": ["./server/*"]
         }
     }
 }
