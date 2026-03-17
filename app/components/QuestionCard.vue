@@ -8,7 +8,12 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-markup';
 
-const md = new MarkdownIt();
+const md = new MarkdownIt({
+    html: true,
+    breaks: true,
+    linkify: true,
+    typographer: true,
+});
 
 interface IProps {
     question: IInterviewQuestion;
@@ -48,7 +53,10 @@ function renderInlineMarkdown(value: string): string {
 }
 
 function renderMarkdownText(markdown: string): string {
-    return md.render(markdown);
+    // Minimal preprocessing - just convert )  to . for list formatting
+    let processed = markdown.replace(/(\d+)\)\s+/g, '$1. ');
+
+    return md.render(processed);
 }
 
 function formatSampleAnswer(answer: string): Array<{ type: 'text' | 'code'; content: string; lang?: string }> {
@@ -298,12 +306,14 @@ defineOptions({
     font-size: var(--font-size-md);
     color: var(--ink);
     margin-top: var(--gap-xxxs);
-    white-space: pre-line;
+    // white-space: pre-line;
     word-break: break-word;
 }
 
 .markdown-block {
-    line-height: 1.6;
+    line-height: 1.8;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .markdown-block :deep(p),
@@ -312,16 +322,57 @@ defineOptions({
 .markdown-block :deep(h1),
 .markdown-block :deep(h2),
 .markdown-block :deep(h3) {
-    margin: 0 0 var(--gap-sm);
+    margin: var(--gap-lg) var(--gap-md);
+    display: block;
+}
+
+.markdown-block :deep(p) {
+    line-height: 1.8;
+}
+
+.markdown-block :deep(h1),
+.markdown-block :deep(h2),
+.markdown-block :deep(h3) {
+    margin-top: var(--gap-lg);
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.markdown-block :deep(h1) {
+    font-size: 1.3em;
+}
+
+.markdown-block :deep(h2) {
+    font-size: 1.15em;
+}
+
+.markdown-block :deep(h3) {
+    font-size: 1.05em;
 }
 
 .markdown-block :deep(ul),
 .markdown-block :deep(ol) {
     padding-left: var(--gap-lg);
+    margin-left: 0;
+    margin-bottom: var(--gap-lg);
 }
 
 .markdown-block :deep(li) {
-    margin-bottom: var(--gap-xxs);
+    margin-bottom: var(--gap-sm);
+    line-height: 1.7;
+}
+
+.markdown-block :deep(li p) {
+    margin: 0 0 var(--gap-xs) 0;
+}
+
+.markdown-block :deep(strong) {
+    font-weight: 600;
+    color: inherit;
+}
+
+.markdown-block :deep(em) {
+    font-style: italic;
 }
 
 .markdown-block :deep(a) {
