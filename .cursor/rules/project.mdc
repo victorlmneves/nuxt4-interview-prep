@@ -15,7 +15,7 @@ alwaysApply: true
 
 ## Coding Conventions
 
-Every rule below is non-negotiable and already enforced across the codebase:
+Treat every rule below as non-negotiable for all new and significantly modified code. Legacy code may not fully comply; do not initiate large refactors solely to align existing files with these rules:
 
 1. **No one-line conditions** — all `if/else/for` blocks use braces, even single-statement bodies
 2. **Explicit `type` imports** — always `import type { IFoo, TBar } from '~/types/index'`; never mixed with value imports
