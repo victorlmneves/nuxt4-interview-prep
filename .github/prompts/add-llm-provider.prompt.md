@@ -16,6 +16,6 @@ Follow the `llm-provider` agent workflow in order:
 2. **`server/api/interview/generate.post.ts`** — add lazy-init client, handler function, and `switch` case; validate output with `validateGuide()`; log with `logLLM()`
 3. **`app/composables/useInterviewGuide.ts`** — add `providerLabel()` mapping
 4. **`app/pages/index.vue`** — add entry to the `providers` selector array
-5. **`nuxt.config.ts`** — add `runtimeConfig` key if a new env variable is needed; also add to `.env.example` and README env section
+5. **Env config** — if a new env variable is needed, add it to `.env.example` and the README env section, and read it from `process.env` in server handlers (to match existing providers). Only add a `runtimeConfig` key in `nuxt.config.ts` if you also migrate the corresponding server code to use `useRuntimeConfig()`.
 
 After completing all steps, verify there are no TypeScript errors and that the `TProvider` union, switch cases, and UI labels are all consistent.

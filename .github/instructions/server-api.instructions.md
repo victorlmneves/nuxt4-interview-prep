@@ -48,14 +48,14 @@ When working with LLM responses, implement the same fallback chain used in `gene
 
 ## LLM Client Initialisation
 
-All provider clients are lazy-initialised (created on first use, not at module load). Follow the same pattern:
+ All provider clients are lazy-initialised (created on first use, not at module load). Follow the same pattern and read API keys from `process.env`, consistent with existing handlers:
 
 ```ts
 let _client: AnthropicClient | undefined
 
 function getClient(): AnthropicClient {
   if (!_client) {
-    _client = new Anthropic({ apiKey: useRuntimeConfig().anthropicApiKey })
+    _client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   }
   return _client
 }

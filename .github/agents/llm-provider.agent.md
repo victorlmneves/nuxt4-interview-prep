@@ -21,13 +21,13 @@ export type TProvider = 'anthropic' | 'openai' | 'gemini' | '<new-provider>'
 
 Four sub-tasks:
 
-1. **Lazy-init client** — add a module-level `let _<provider>Client` variable and a `get<Provider>Client()` function that reads the API key from `useRuntimeConfig()` and instantiates the client on first call.
+1. **Lazy-init client** — add a module-level `let _<provider>Client` variable and a `get<Provider>Client()` function that reads the API key using the **same pattern as the existing providers in this file** (currently from `process.env`) and instantiates the client on first call.
 
 2. **Handler function** — add `async function callWith<Provider>(systemPrompt: string, userPrompt: string): Promise<string>` following the same shape as the existing `callWithAnthropic`/`callWithGemini`/`callWithOpenAI` functions. Return the raw string response.
 
 3. **Provider switch case** — add a `case '<new-provider>':` branch in the main `switch (provider)` block that calls the new handler and pipes the raw result through `parseGuideResponse()`.
 
-4. **Key validation** — if the API key is missing, throw `createError({ statusCode: 400, message: 'MISSING_KEY: ...' })` before making any network call.
+4. **Key validation** — if the API key is missing, throw `createError(...)` **in exactly the same way the existing providers do** (same `statusCode` and `statusMessage` pattern, often `500` + a descriptive `statusMessage`) before making any network call.
 
 Reference `buildSystemPrompt()` and `buildUserPrompt()` — pass them unchanged to the new provider. Reference `parseGuideResponse()` — call it on the raw text response; never JSON.parse directly.
 
@@ -63,7 +63,7 @@ Document the variable in `.env.example` and in the README env section.
 
 ## Constraints
 
-- **Never** import a provider SDK at the top level — only inside the lazy-init function or the handler
+- When importing or instantiating a provider SDK, follow the existing pattern in `server/api/interview/generate.post.ts` (including any current top-level imports and lazy-init helpers); only refactor this pattern if you update all providers in that file within the same change
 - **Always** run `validateGuide()` on the parsed output before storing in `guideStore`
 - **Always** wrap the provider call in `try/catch (err: unknown)` and fall back to the safe fallback guide
 - **Always** call `logLLM()` with provider, prompt, and raw response for debug traceability

@@ -101,8 +101,8 @@ defineOptions({
 </template>
 
 <style scoped lang="scss">
-@use '../assets/scss/variables' as vars;
-@use '../assets/scss/mixins' as mixins;
+@use '~/assets/scss/variables' as vars;
+@use '~/assets/scss/mixins' as mixins;
 
 .history-page {
     @include mixins.flex(column);

@@ -54,7 +54,7 @@ Every component ends with `<style scoped lang="scss">`. Use BEM:
 }
 ```
 
-Import design tokens from `~/assets/scss/_variables.scss` via `@use` if needed. Never hardcode colors or spacing values directly — use the CSS variables defined in `global.scss` (e.g. `var(--color-accent)`, `var(--gap-md)`).
+Import design tokens from `~/assets/scss/_variables.scss` via `@use` if needed. In general, avoid hardcoding colors or spacing values directly — prefer the CSS variables defined in `global.scss` (e.g. `var(--color-accent)`, `var(--gap-md)`). It is acceptable to hardcode values for isolated, self-contained UI elements (for example, embedded code blocks or third-party widgets) where using shared tokens would be impractical, but keep these cases rare and consistent.
 
 ## Canonical Examples
 

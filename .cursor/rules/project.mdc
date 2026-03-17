@@ -11,7 +11,7 @@ alwaysApply: true
 - **SCSS** — BEM naming, always scoped per component; design tokens in `app/assets/scss/_variables.scss`
 - **LLM Providers**: Anthropic SDK (primary), OpenAI Responses API, Google Generative AI (Gemini)
 - **Validation**: Zod schemas in `server/validation/guideSchema.ts`
-- **Document extraction**: `pdf-parse` (PDF) and `mammoth` (DOCX) — both are dev deps, integrated in `server/api/extract-text.post.ts`
+- **Document extraction**: `pdf-parse` (PDF) and `mammoth` (DOCX) — installed as runtime dependencies and integrated in `server/api/extract-text.post.ts`
 
 ## Coding Conventions
 
@@ -43,7 +43,7 @@ Every rule below is non-negotiable and already enforced across the codebase:
 
 | File | Role |
 |------|------|
-| `server/api/interview/generate.post.ts` | Main generation endpoint: exports `guideStore` (in-memory `Map<string, IInterviewGuide>`), `buildSystemPrompt()`, `buildUserPrompt()`, `parseGuideResponse()` |
+| `server/api/interview/generate.post.ts` | Main generation endpoint: exports `guideStore` (in-memory `Map`); uses internal helpers like `buildSystemPrompt()`, `buildUserPrompt()`, and `parseGuideResponse()` for prompt construction and parsing |
 | `server/api/extract-text.post.ts` | Multipart file → plain text (`.txt`, `.pdf`, `.docx`) |
 | `server/api/interview/history.ts` | GET (list) / DELETE (clear all) on `guideStore` |
 | `server/api/interview/guide/[id].ts` | GET / DELETE single guide by ID from `guideStore` |

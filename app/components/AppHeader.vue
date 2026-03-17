@@ -17,8 +17,8 @@ defineOptions({
 </template>
 
 <style scoped lang="scss">
-@use '../assets/scss/variables' as vars;
-@use '../assets/scss/mixins' as mixins;
+@use '~/assets/scss/variables' as vars;
+@use '~/assets/scss/mixins' as mixins;
 
 .app-header {
     position: sticky;
