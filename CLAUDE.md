@@ -57,12 +57,12 @@ Every rule below is non-negotiable for new and updated code. Existing code may n
 // IInterviewGuide — the full generated guide
 interface IInterviewGuide {
   id: string
-  createdAt: string
-  updatedAt: string
+  generatedAt: string
   provider: TProvider
-  type: TInterviewType
-  candidate: ICandidate
-  roleName: string
+  interviewType: TInterviewType
+  candidateName: string
+  cvText: string
+  jobDescription: string
   sections: IInterviewSection[]
   openingNotes: string
   closingNotes: string
@@ -73,10 +73,10 @@ interface IHistoryEntry {
   id: string
   candidateName: string
   roleName: string
-  type: TInterviewType
+  interviewType: TInterviewType
   provider: TProvider
   totalQuestions: number
-  createdAt: string
+  generatedAt: string
 }
 
 // IGeneratePayload — POST /api/interview/generate body
