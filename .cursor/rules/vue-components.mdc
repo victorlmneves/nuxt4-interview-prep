@@ -36,7 +36,7 @@ Never use runtime `defineProps({ ... })` with inline type literals.
 
 - **`async/await` only** — no `.then()` chains
 - **`try/catch` with `err: unknown`** — narrow the error inside the block; never `catch (err: any)`
-- **Explicit type annotations** on every `ref`, `computed`, and function signature — no rely-on-inference for public APIs
+- **Explicit type annotations** on public-facing `ref`s/`computed`s and all function signatures — internal/local state may rely on inference if it stays consistent with existing components (e.g. simple `ref(false)`)
 - **No one-line conditions** — always use braces, even for single-statement bodies
 
 ## Template
