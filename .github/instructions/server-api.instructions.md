@@ -55,7 +55,7 @@ let _client: AnthropicClient | undefined
 
 function getClient(): AnthropicClient {
   if (!_client) {
-    _client = new Anthropic({ apiKey: useRuntimeConfig().anthropicApiKey })
+    _client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   }
   return _client
 }
