@@ -1,0 +1,75 @@
+---
+description: "Use when creating or editing Vue SFC components — covers defineOptions naming, scoped BEM SCSS, prop typing, composable usage, and template conventions for this project"
+globs:
+  - "app/**/*.vue"
+alwaysApply: false
+---
+
+# Vue Component Guidelines
+
+## Required: defineOptions
+
+Every SFC **must** declare `defineOptions` with `name` matching the PascalCase filename — place it before `ref`, `computed`, or any other composable calls:
+
+```ts
+defineOptions({ name: 'MyComponent' })
+```
+
+## Props
+
+Always define props through a local `IProps` interface. Types must come from `~/types/index` via an explicit `type` import:
+
+```ts
+import type { IInterviewSection } from '~/types/index'
+
+interface IProps {
+  section: IInterviewSection
+  index: number
+}
+
+const props = defineProps<IProps>()
+```
+
+Never use runtime `defineProps({ ... })` with inline type literals.
+
+## Script Setup
+
+- **`async/await` only** — no `.then()` chains
+- **`try/catch` with `err: unknown`** — narrow the error inside the block; never `catch (err: any)`
+- **Explicit type annotations** on every `ref`, `computed`, and function signature — no rely-on-inference for public APIs
+- **No one-line conditions** — always use braces, even for single-statement bodies
+
+## Template
+
+- Prefer `v-for` with an explicit `:key` that is not an array index when working with `IInterviewGuide` / `IInterviewSection` / `IInterviewQuestion` — use `.id`
+- Use `v-bind` shorthand (`:prop`) and `v-on` shorthand (`@event`)
+- Never call complex logic inline in templates — extract to a `computed` or method
+
+## SCSS (always scoped + BEM)
+
+Every component ends with `<style scoped lang="scss">`. Use BEM:
+
+```scss
+.question-card { // block
+  &__header { ... }     // element
+  &__header--active { ... } // modifier
+}
+```
+
+Import design tokens from `~/assets/scss/_variables.scss` via `@use` if needed. Never hardcode colors or spacing values directly — use the CSS variables defined in `global.scss` (e.g. `var(--color-accent)`, `var(--gap-md)`).
+
+## Canonical Examples
+
+- **Simple component**: `app/components/InterviewSection.vue` — single prop, minimal state, no async
+- **Complex component**: `app/components/QuestionCard.vue` — expand/collapse state, rich markdown/code rendering, `useInterviewGuide` composable usage
+- **Page component**: `app/pages/interview/[id].vue` — route param, `onMounted` data load, full guide rendering
+
+## Composable Usage
+
+Use `useInterviewGuide()` for all guide state, history, and label/color helpers. Never duplicate its logic inline:
+
+```ts
+const { result, isLoading, error, generate, loadGuide, categoryColor, providerLabel } = useInterviewGuide()
+```
+
+Use `useDateFormat()` for any date/time display — never call `new Date().toLocaleString()` directly in components.

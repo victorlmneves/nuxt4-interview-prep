@@ -1,0 +1,118 @@
+# Nuxt 4 Interview Prep — Project Guidelines
+
+## Tech Stack
+
+- **Nuxt 4** with `compatibilityVersion: 4` and TypeScript throughout
+- **SCSS** — BEM naming, always scoped per component; design tokens in `app/assets/scss/_variables.scss`
+- **LLM Providers**: Anthropic SDK (primary), OpenAI Responses API, Google Generative AI (Gemini)
+- **Validation**: Zod schemas in `server/validation/guideSchema.ts`
+- **Document extraction**: `pdf-parse` (PDF) and `mammoth` (DOCX) — both are dev deps, integrated in `server/api/extract-text.post.ts`
+
+## Coding Conventions
+
+Every rule below is non-negotiable and already enforced across the codebase:
+
+1. **No one-line conditions** — all `if/else/for` blocks use braces, even single-statement bodies
+2. **Explicit `type` imports** — always `import type { IFoo, TBar } from '~/types/index'`; never mixed with value imports
+3. **Typed composables** — every parameter and return value has an explicit TypeScript type; no inferred-only signatures
+4. **`defineOptions({ name: 'ComponentName' })`** — required on every Vue SFC, before any other option
+5. **BEM SCSS, always scoped** — block, element (`__`), modifier (`--`) naming; `<style scoped lang="scss">` on every component
+6. **`async/await` throughout** — no `.then()` chains anywhere in the codebase
+7. **`try/catch` with `err: unknown`** — never `catch (err: any)` or untyped catch; narrow the error inside the block
+
+## Architecture
+
+### Frontend (app/)
+
+| File | Role |
+|------|------|
+| `app/types/index.ts` | Single source of truth for all types: `TProvider`, `TInterviewType`, `TQuestionCategory`, `TDifficulty`, `IInterviewGuide`, `IHistoryEntry`, `IGeneratePayload`, etc. |
+| `app/composables/useInterviewGuide.ts` | Core state machine — `generate()`, `loadGuide()`, `loadHistory()`, `deleteFromHistory()`, `clearHistory()`, plus helpers `categoryColor()`, `providerLabel()`, `interviewTypeLabel()` |
+| `app/pages/index.vue` | Generator page — dual CV input (paste/file), provider + interviewType dropdowns, calls `useInterviewGuide.generate()` |
+| `app/pages/history.vue` | History listing grid — loads `IHistoryEntry[]`, navigates to `/interview/[id]` |
+| `app/pages/interview/[id].vue` | Guide detail — renders `IInterviewGuide` via `InterviewSection` + `QuestionCard` |
+
+**Persistence**: Guides are stored in `localStorage` (`'interview_guides'` key as `{ [id]: guide }`) and history as `'interview_history'` (`IHistoryEntry[]`). API is a fallback only.
+
+### Server (server/)
+
+| File | Role |
+|------|------|
+| `server/api/interview/generate.post.ts` | Main generation endpoint: exports `guideStore` (in-memory `Map<string, IInterviewGuide>`), `buildSystemPrompt()`, `buildUserPrompt()`, `parseGuideResponse()` |
+| `server/api/extract-text.post.ts` | Multipart file → plain text (`.txt`, `.pdf`, `.docx`) |
+| `server/api/interview/history.ts` | GET (list) / DELETE (clear all) on `guideStore` |
+| `server/api/interview/guide/[id].ts` | GET / DELETE single guide by ID from `guideStore` |
+| `server/validation/guideSchema.ts` | Zod schemas — call `validateGuide()` for non-throwing validation of any parsed LLM output |
+| `server/utils/llmLogger.ts` | JSONL debug logger — call `logLLM(entry)` when `DEBUG_LLM=true`; handles size rotation automatically |
+
+**LLM parsing fallback** (implemented in `generate.post.ts`, replicate when adding new routes):
+1. Direct `JSON.parse()`
+2. Extract balanced JSON block from noisy model text
+3. Heuristic key-extraction + single regenerate attempt
+4. Return safe fallback guide — the UI must never see a 500 from a parse failure
+
+### Data Shapes (key interfaces)
+
+```ts
+// IInterviewGuide — the full generated guide
+interface IInterviewGuide {
+  id: string
+  createdAt: string
+  updatedAt: string
+  provider: TProvider
+  type: TInterviewType
+  candidate: ICandidate
+  roleName: string
+  sections: IInterviewSection[]
+  openingNotes: string
+  closingNotes: string
+}
+
+// IHistoryEntry — lightweight card for history list
+interface IHistoryEntry {
+  id: string
+  candidateName: string
+  roleName: string
+  type: TInterviewType
+  provider: TProvider
+  totalQuestions: number
+  createdAt: string
+}
+
+// IGeneratePayload — POST /api/interview/generate body
+interface IGeneratePayload {
+  cvText: string
+  jobDescription: string
+  provider: TProvider
+  interviewType: TInterviewType
+}
+```
+
+## Build & Dev
+
+```bash
+pnpm dev         # start dev server
+pnpm build       # production build
+pnpm lint:fix    # ESLint auto-fix
+pnpm format      # Prettier + Stylelint + ESLint
+DEBUG_LLM=true pnpm dev  # enable LLM request/response logging
+```
+
+## Environment Variables
+
+```
+ANTHROPIC_API_KEY    # Required for Anthropic provider
+OPENAI_API_KEY       # Required for OpenAI provider
+GEMINI_API_KEY       # Required for Gemini provider (or use ADC)
+GOOGLE_APPLICATION_CREDENTIALS  # Path to service account JSON (Gemini ADC)
+DEFAULT_LLM_PROVIDER             # Override default provider (default: gemini)
+DEBUG_LLM                        # Set true to write server/logs/llm.jsonl
+```
+
+Never commit `.env` or service account JSON files.
+
+## Notes
+
+- The in-memory `guideStore` resets on server restart. Replace with Drizzle + SQLite/Postgres for production.
+- `pdf-parse` and `mammoth` are present as dev deps — wire them properly before deploying CV extraction to production.
+- Always run `validateGuide()` on parsed LLM output before storing in `guideStore`.
