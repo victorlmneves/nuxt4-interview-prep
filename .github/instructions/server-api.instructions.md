@@ -18,7 +18,7 @@ Always check for existence before reading; return an H3 error when not found:
 ```ts
 const guide = guideStore.get(id)
 if (!guide) {
-  throw createError({ statusCode: 404, message: `Guide ${id} not found` })
+  throw createError({ statusCode: 404, statusMessage: `Guide ${id} not found` })
 }
 ```
 
@@ -70,7 +70,7 @@ try {
   // handler logic
 } catch (err: unknown) {
   const message = err instanceof Error ? err.message : String(err)
-  throw createError({ statusCode: 500, message })
+  throw createError({ statusCode: 500, statusMessage: message })
 }
 ```
 
@@ -103,5 +103,5 @@ For handlers that serve multiple HTTP methods from one file, branch on `event.me
 ```ts
 if (event.method === 'GET') { ... }
 else if (event.method === 'DELETE') { ... }
-else { throw createError({ statusCode: 405, message: 'Method Not Allowed' }) }
+else { throw createError({ statusCode: 405, statusMessage: 'Method Not Allowed' }) }
 ```
