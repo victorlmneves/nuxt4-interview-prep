@@ -11,7 +11,7 @@ alwaysApply: true
 - **SCSS** — BEM naming, always scoped per component; design tokens in `app/assets/scss/_variables.scss`
 - **LLM Providers**: Anthropic SDK (primary), OpenAI Responses API, Google Generative AI (Gemini)
 - **Validation**: Zod schemas in `server/validation/guideSchema.ts`
-- **Document extraction**: `pdf-parse` (PDF) and `mammoth` (DOCX) — both are dev deps, integrated in `server/api/extract-text.post.ts`
+- **Document extraction**: `pdf-parse` (PDF) and `mammoth` (DOCX), integrated in `server/api/extract-text.post.ts`
 
 ## Coding Conventions
 
