@@ -51,7 +51,7 @@ z.enum(['technical', 'behavioural', 'situational', 'culture', 'leadership', 'pro
 
 ### Step 5 — Fallback answer (`app/components/QuestionCard.vue`)
 
-Add a fallback example answer for the new category in the `fallbackExampleAnswer` logic (the `switch` or `if` block that handles `behavioural`, `situational`, `culture`, and `leadership`). Keep it concise and relevant to the category intent.
+In the `QuestionCard` template, add a fallback example answer for the new category in the same `v-else-if` block/chain that currently handles `behavioural`, `situational`, `culture`, and `leadership` (the inline category-specific fallback answers). Keep it concise and relevant to the category intent.
 
 ---
 
