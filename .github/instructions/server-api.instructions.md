@@ -78,10 +78,10 @@ Never `catch (err: any)` and never re-throw raw unknown values.
 
 ## Debug Logging
 
-Use `logLLM()` from `~/server/utils/llmLogger` — it only writes when `DEBUG_LLM=true`:
+Use `logLLM()` from `#server/utils/llmLogger` — it only writes when `DEBUG_LLM=true`:
 
 ```ts
-import { logLLM } from '~/server/utils/llmLogger'
+import { logLLM } from '#server/utils/llmLogger'
 
 logLLM({ provider: 'anthropic', prompt: systemPrompt, response: rawText })
 ```
