@@ -9,7 +9,7 @@ alwaysApply: false
 
 ## Required: defineOptions
 
-Every SFC **must** declare `defineOptions` with `name` matching the PascalCase filename — place it before `ref`, `computed`, or any other composable calls:
+Every SFC **must** declare `defineOptions` with `name` matching the PascalCase filename. For new components (or when doing major refactors), prefer placing it near the top of the `<script setup>` block before `ref`, `computed`, or other composable calls; for existing components, follow the surrounding style rather than introducing reorder-only diffs:
 
 ```ts
 defineOptions({ name: 'MyComponent' })
