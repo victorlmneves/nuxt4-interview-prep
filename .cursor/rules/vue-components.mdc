@@ -56,7 +56,7 @@ Every component ends with `<style scoped lang="scss">`. Use BEM:
 }
 ```
 
-Import design tokens from `~/assets/scss/_variables.scss` via `@use` if needed. Never hardcode colors or spacing values directly — use the CSS variables defined in `global.scss` (e.g. `var(--color-accent)`, `var(--gap-md)`).
+Import design tokens from `~/assets/scss/_variables.scss` via `@use` if needed. Prefer using the CSS variables defined in `global.scss` for colors and spacing (e.g. `var(--color-accent)`, `var(--gap-md)`) instead of hardcoded literals. Existing canonical components may still contain hardcoded values; when you modify their styles, migrate those literals to the design tokens where practical.
 
 ## Canonical Examples
 
