@@ -10,7 +10,7 @@ applyTo: "server/api/**/*.ts"
 The in-memory guide store lives in `server/api/interview/generate.post.ts`. Import it by name — never re-declare it:
 
 ```ts
-import { guideStore } from '~/server/api/interview/generate.post'
+import { guideStore } from '#server/api/interview/generate.post'
 ```
 
 Always check for existence before reading; return an H3 error when not found:
@@ -18,16 +18,16 @@ Always check for existence before reading; return an H3 error when not found:
 ```ts
 const guide = guideStore.get(id)
 if (!guide) {
-  throw createError({ statusCode: 404, message: `Guide ${id} not found` })
+  throw createError({ statusCode: 404, statusMessage: `Guide ${id} not found` })
 }
 ```
 
 ## Zod Validation
 
-Every parsed LLM output **must** pass through `validateGuide()` before being stored. Import from `~/server/validation/guideSchema`:
+Every parsed LLM output **must** pass through `validateGuide()` before being stored. Import from `#server/validation/guideSchema`:
 
 ```ts
-import { validateGuide } from '~/server/validation/guideSchema'
+import { validateGuide } from '#server/validation/guideSchema'
 
 const result = validateGuide(parsed)
 if (!result.success) {
@@ -78,10 +78,10 @@ Never `catch (err: any)` and never re-throw raw unknown values.
 
 ## Debug Logging
 
-Use `logLLM()` from `~/server/utils/llmLogger` — it only writes when `DEBUG_LLM=true`:
+Use `logLLM()` from `#server/utils/llmLogger` — it only writes when `DEBUG_LLM=true`:
 
 ```ts
-import { logLLM } from '~/server/utils/llmLogger'
+import { logLLM } from '#server/utils/llmLogger'
 
 logLLM({ provider: 'anthropic', prompt: systemPrompt, response: rawText })
 ```
@@ -98,10 +98,11 @@ import type { IInterviewGuide, TProvider } from '~/types/index'
 
 ## Method Routing
 
-For handlers that serve multiple HTTP methods from one file, branch on `event.method`:
+For handlers that serve multiple HTTP methods from one file, branch on `getMethod(event)`:
 
 ```ts
-if (event.method === 'GET') { ... }
-else if (event.method === 'DELETE') { ... }
-else { throw createError({ statusCode: 405, message: 'Method Not Allowed' }) }
+const method = getMethod(event)
+if (method === 'GET') { ... }
+else if (method === 'DELETE') { ... }
+else { throw createError({ statusCode: 405, statusMessage: 'Method Not Allowed' }) }
 ```

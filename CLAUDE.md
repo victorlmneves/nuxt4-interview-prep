@@ -93,5 +93,5 @@ Never commit `.env` or service account JSON files.
 ## Notes
 
 - The in-memory `guideStore` resets on server restart. Replace with Drizzle + SQLite/Postgres for production.
-- `pdf-parse` and `mammoth` are present as dev deps — wire them properly before deploying CV extraction to production.
+- `pdf-parse` and `mammoth` are runtime dependencies used by `server/api/extract-text.post.ts`; keep them in `dependencies` (not `devDependencies`) for production CV extraction.
 - Always run `validateGuide()` on parsed LLM output before storing in `guideStore`.

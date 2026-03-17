@@ -6,7 +6,7 @@
 - **SCSS** — BEM naming, always scoped per component; design tokens in `app/assets/scss/_variables.scss`
 - **LLM Providers**: Anthropic SDK (primary), OpenAI Responses API, Google Generative AI (Gemini)
 - **Validation**: Zod schemas in `server/validation/guideSchema.ts`
-- **Document extraction**: `pdf-parse` (PDF) and `mammoth` (DOCX) — both are dev deps, integrated in `server/api/extract-text.post.ts`
+- **Document extraction**: `pdf-parse` (PDF) and `mammoth` (DOCX) — both are integrated in `server/api/extract-text.post.ts`
 
 ## Coding Conventions
 
@@ -38,7 +38,7 @@ Every rule below is non-negotiable and already enforced across the codebase:
 
 | File | Role |
 |------|------|
-| `server/api/interview/generate.post.ts` | Main generation endpoint: exports `guideStore` (in-memory `Map<string, IInterviewGuide>`), `buildSystemPrompt()`, `buildUserPrompt()`, `parseGuideResponse()` |
+| `server/api/interview/generate.post.ts` | Main generation endpoint — defines the LLM call + parsing flow and exports `guideStore` (in-memory `Map<string, IInterviewGuide>`) for use by other routes |
 | `server/api/extract-text.post.ts` | Multipart file → plain text (`.txt`, `.pdf`, `.docx`) |
 | `server/api/interview/history.ts` | GET (list) / DELETE (clear all) on `guideStore` |
 | `server/api/interview/guide/[id].ts` | GET / DELETE single guide by ID from `guideStore` |
@@ -56,16 +56,19 @@ Every rule below is non-negotiable and already enforced across the codebase:
 ```ts
 // IInterviewGuide — the full generated guide
 interface IInterviewGuide {
-  id: string
-  createdAt: string
-  updatedAt: string
-  provider: TProvider
-  type: TInterviewType
-  candidate: ICandidate
-  roleName: string
-  sections: IInterviewSection[]
-  openingNotes: string
-  closingNotes: string
+  id: string;
+  candidateName: string;
+  roleName: string;
+  provider: TProvider;
+  generatedAt: string;
+  totalDurationMinutes: number;
+  interviewType: TInterviewType;
+  openingNotes: string;
+  closingNotes: string;
+  sections: IInterviewSection[];
+  candidate: ICandidate;
+  cvText: string;
+  jobDescription: string;
 }
 
 // IHistoryEntry — lightweight card for history list

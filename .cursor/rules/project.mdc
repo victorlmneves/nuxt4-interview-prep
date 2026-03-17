@@ -11,7 +11,7 @@ alwaysApply: true
 - **SCSS** — BEM naming, always scoped per component; design tokens in `app/assets/scss/_variables.scss`
 - **LLM Providers**: Anthropic SDK (primary), OpenAI Responses API, Google Generative AI (Gemini)
 - **Validation**: Zod schemas in `server/validation/guideSchema.ts`
-- **Document extraction**: `pdf-parse` (PDF) and `mammoth` (DOCX) — installed as runtime dependencies and integrated in `server/api/extract-text.post.ts`
+- **Document extraction**: `pdf-parse` (PDF) and `mammoth` (DOCX) — installed Node dependencies, integrated in `server/api/extract-text.post.ts`
 
 ## Coding Conventions
 
@@ -61,16 +61,19 @@ Every rule below is non-negotiable and already enforced across the codebase:
 ```ts
 // IInterviewGuide — the full generated guide
 interface IInterviewGuide {
-  id: string
-  createdAt: string
-  updatedAt: string
-  provider: TProvider
-  type: TInterviewType
-  candidate: ICandidate
-  roleName: string
-  sections: IInterviewSection[]
-  openingNotes: string
-  closingNotes: string
+  id: string;
+  candidateName: string;
+  roleName: string;
+  provider: TProvider;
+  generatedAt: string;
+  totalDurationMinutes: number;
+  interviewType: TInterviewType;
+  openingNotes: string;
+  closingNotes: string;
+  sections: IInterviewSection[];
+  candidate: ICandidate;
+  cvText: string;
+  jobDescription: string;
 }
 
 // IHistoryEntry — lightweight card for history list
