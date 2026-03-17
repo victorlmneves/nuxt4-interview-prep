@@ -24,10 +24,10 @@ if (!guide) {
 
 ## Zod Validation
 
-Every parsed LLM output **must** pass through `validateGuide()` before being stored. Import from `~/server/validation/guideSchema`:
+Every parsed LLM output **must** pass through `validateGuide()` before being stored. Import from `#server/validation/guideSchema`:
 
 ```ts
-import { validateGuide } from '~/server/validation/guideSchema'
+import { validateGuide } from '#server/validation/guideSchema'
 
 const result = validateGuide(parsed)
 if (!result.success) {
