@@ -38,7 +38,7 @@ These rules are non-negotiable guidelines for all new and updated code; some exi
 
 | File | Role |
 |------|------|
-| `server/api/interview/generate.post.ts` | Main generation endpoint: exports `guideStore` (in-memory `Map<string, IInterviewGuide>`), `buildSystemPrompt()`, `buildUserPrompt()`, `parseGuideResponse()` |
+| `server/api/interview/generate.post.ts` | Main generation endpoint: exposes `guideStore` (in-memory `Map<string, IInterviewGuide>`) used by interview routes; builds system/user prompts and parses LLM responses internally. |
 | `server/api/extract-text.post.ts` | Multipart file → plain text (`.txt`, `.pdf`, `.docx`) |
 | `server/api/interview/history.ts` | GET (list) / DELETE (clear all) on `guideStore` |
 | `server/api/interview/guide/[id].ts` | GET / DELETE single guide by ID from `guideStore` |
