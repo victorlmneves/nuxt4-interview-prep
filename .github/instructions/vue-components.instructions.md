@@ -7,7 +7,7 @@ applyTo: "app/**/*.vue"
 
 ## Required: defineOptions
 
-Every SFC **must** declare `defineOptions` with `name` matching the PascalCase filename — place it before `ref`, `computed`, or any other composable calls:
+Every SFC **must** declare `defineOptions` with `name` matching the PascalCase filename. Prefer placing it before `ref`, `computed`, or any other composable calls to keep scripts consistent, but this is not required:
 
 ```ts
 defineOptions({ name: 'MyComponent' })
