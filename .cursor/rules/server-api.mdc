@@ -12,7 +12,7 @@ alwaysApply: false
 The in-memory guide store lives in `server/api/interview/generate.post.ts`. Import it by name — never re-declare it:
 
 ```ts
-import { guideStore } from '~/server/api/interview/generate.post'
+import { guideStore } from '#server/api/interview/generate.post'
 ```
 
 Always check for existence before reading; return an H3 error when not found:
