@@ -57,11 +57,10 @@ These rules are non-negotiable guidelines for all new and updated code; some exi
 // IInterviewGuide — the full generated guide
 interface IInterviewGuide {
   id: string
-  createdAt: string
-  updatedAt: string
+  generatedAt: string
   provider: TProvider
-  type: TInterviewType
-  candidate: ICandidate
+  interviewType: TInterviewType
+  candidateName: string
   roleName: string
   sections: IInterviewSection[]
   openingNotes: string
@@ -73,7 +72,7 @@ interface IHistoryEntry {
   id: string
   candidateName: string
   roleName: string
-  type: TInterviewType
+  interviewType: TInterviewType
   provider: TProvider
   totalQuestions: number
   createdAt: string
