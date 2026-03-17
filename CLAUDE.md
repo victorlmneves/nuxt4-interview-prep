@@ -10,7 +10,7 @@
 
 ## Coding Conventions
 
-Every rule below is non-negotiable and already enforced across the codebase:
+Every rule below is non-negotiable for new and updated code. Existing code may not fully comply yet, and enforcement is being rolled out:
 
 1. **No one-line conditions** — all `if/else/for` blocks use braces, even single-statement bodies
 2. **Explicit `type` imports** — always `import type { IFoo, TBar } from '~/types/index'`; never mixed with value imports
