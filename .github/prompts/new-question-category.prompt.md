@@ -43,10 +43,18 @@ Add a `case '<new-category>':` entry in `categoryColor()` returning a hex color 
 
 ### Step 4 — Zod schema (`server/validation/guideSchema.ts`)
 
-Add the new category to the `TQuestionCategory` enum in `QuestionSchema`:
+Add the new category to the `QuestionCategory` z.enum that `QuestionSchema` uses:
 
 ```ts
-z.enum(['technical', 'behavioural', 'situational', 'culture', 'leadership', 'problemSolving', '<new-category>'])
+export const QuestionCategory = z.enum([
+  'technical',
+  'behavioural',
+  'situational',
+  'culture',
+  'leadership',
+  'problemSolving',
+  '<new-category>',
+])
 ```
 
 ### Step 5 — Fallback answer (`app/components/QuestionCard.vue`)
