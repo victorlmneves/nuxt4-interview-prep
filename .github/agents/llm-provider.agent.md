@@ -63,7 +63,7 @@ Document the variable in `.env.example` and in the README env section.
 
 ## Constraints
 
-- **Never** import a provider SDK at the top level — only inside the lazy-init function or the handler
+- Follow the existing pattern in `server/api/interview/generate.post.ts` for importing provider SDKs (currently imported at module scope with lazy-init client functions). Do not introduce a different import pattern without updating the canonical implementation as well.
 - **Always** run `validateGuide()` on the parsed output before storing in `guideStore`
 - **Always** wrap the provider call in `try/catch (err: unknown)` and fall back to the safe fallback guide
 - **Always** call `logLLM()` with provider, prompt, and raw response for debug traceability
